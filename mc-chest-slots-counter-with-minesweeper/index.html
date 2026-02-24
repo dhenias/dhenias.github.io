@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>chest gui with minesweeper</title>
+<title>chest slots counter with minesweeper</title>
 <link rel="icon" type="image/png" href="https://static.miraheze.org/btawiki/b/b8/Wooden_Chest.png">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -86,7 +86,6 @@
     font-weight: bold;
   }
 
-  /* ---- TOP CHEST GRID ---- */
   .grid {
     display: grid;
     gap: 2px;
@@ -133,7 +132,7 @@
     margin: 4px 0;
   }
 
-  /* ---- MINESWEEPER GRID ---- */
+  /* ---- MINESWEEPER ---- */
   .ms-grid {
     display: grid;
     grid-template-columns: repeat(9, var(--cell));
@@ -166,58 +165,29 @@
   .ms-cell.hidden { cursor: pointer; }
   .ms-cell.hidden:hover { background: #9e9e9e; }
 
-  /* Long-press charging ring — color = action that will fire */
   .ms-cell.pressing::after {
     content: '';
     position: absolute;
     inset: 2px;
     border-radius: 50%;
-    border: 3px solid #4db8e8; /* default: flag blue */
+    border: 3px solid #4db8e8;
     animation: presscharge 0.5s linear forwards;
     pointer-events: none;
   }
-  /* In flag mode, long-press = dig, so ring is green */
-  .ms-grid.flag-mode .ms-cell.pressing::after {
-    border-color: #7ab87a;
-  }
+  .ms-grid.flag-mode .ms-cell.pressing::after { border-color: #7ab87a; }
 
   @keyframes presscharge {
     0%   { opacity: 0.3; transform: scale(0.5); }
     100% { opacity: 1;   transform: scale(1); }
   }
 
-  .ms-cell.revealed {
-    background: #a0a0a0;
-    border: 1px solid #888;
-    cursor: default;
-  }
+  .ms-cell.revealed { background: #a0a0a0; border: 1px solid #888; cursor: default; }
+  .ms-cell.flagged  { background: #1a6b9a; border-top: 2px solid #4db8e8; border-left: 2px solid #4db8e8; border-right: 2px solid #0a3a5a; border-bottom: 2px solid #0a3a5a; }
+  .ms-cell.mine-hit { background: #cc3333; border: 2px solid #ff5555; }
 
-  .ms-cell.flagged {
-    background: #1a6b9a;
-    border-top: 2px solid #4db8e8;
-    border-left: 2px solid #4db8e8;
-    border-right: 2px solid #0a3a5a;
-    border-bottom: 2px solid #0a3a5a;
-  }
-
-  .ms-cell.mine-hit {
-    background: #cc3333;
-    border: 2px solid #ff5555;
-  }
-
-  .ms-cell.mine-revealed {
-    background: #a0a0a0;
-    border: 1px solid #888;
-  }
-
-  .n1 { color: #1111cc; }
-  .n2 { color: #117711; }
-  .n3 { color: #cc1111; }
-  .n4 { color: #111177; }
-  .n5 { color: #771111; }
-  .n6 { color: #117777; }
-  .n7 { color: #111111; }
-  .n8 { color: #777777; }
+  .n1{color:#1111cc}.n2{color:#117711}.n3{color:#cc1111}
+  .n4{color:#111177}.n5{color:#771111}.n6{color:#117777}
+  .n7{color:#111111}.n8{color:#777777}
 
   .ms-hud {
     display: flex;
@@ -299,38 +269,278 @@
     border-right: 3px solid #444444;
     border-bottom: 3px solid #444444;
     color: #444;
-    transition: background 0.08s;
     white-space: nowrap;
   }
 
-  .tool-btn.active-dig {
+  .tool-btn.active-dig  { background:#7ab87a; border-top:3px solid #333; border-left:3px solid #333; border-right:3px solid #aff5af; border-bottom:3px solid #aff5af; color:#1a3d1a; }
+  .tool-btn.active-flag { background:#1a6b9a; border-top:3px solid #333; border-left:3px solid #333; border-right:3px solid #4db8e8; border-bottom:3px solid #4db8e8; color:#d0f0ff; }
+  .tool-btn:not(.active-dig):not(.active-flag):hover { background: #bbbbbb; }
+
+  .ms-grid.flag-mode .ms-cell.hidden       { background: #7a9ab0; }
+  .ms-grid.flag-mode .ms-cell.hidden:hover { background: #8ab0c8; }
+
+  .tool-label { font-size: 10px; color: #555; font-family: 'Segoe UI', sans-serif; }
+
+  /* ---- PLAYER / LEADERBOARD ---- */
+  .player-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 2px 2px;
+    flex-wrap: wrap;
+  }
+
+  .player-name-display {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #1a3d1a;
     background: #7ab87a;
-    border-top: 3px solid #333;
-    border-left: 3px solid #333;
-    border-right: 3px solid #aff5af;
-    border-bottom: 3px solid #aff5af;
+    border-top: 2px solid #333;
+    border-left: 2px solid #333;
+    border-right: 2px solid #aff5af;
+    border-bottom: 2px solid #aff5af;
+    padding: 3px 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+
+  .player-name-display:hover { background: #8acc8a; }
+
+  .lb-toggle-btn {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    background: #aaaaaa;
+    border-top: 2px solid #dddddd;
+    border-left: 2px solid #dddddd;
+    border-right: 2px solid #444;
+    border-bottom: 2px solid #444;
+    color: #333;
+    padding: 3px 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+
+  .lb-toggle-btn:hover { background: #bbbbbb; }
+
+  /* Leaderboard panel */
+  .lb-panel {
+    background: #b0b0b0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    padding: 6px 8px;
+    margin: 2px 0;
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .lb-panel.open { display: flex; }
+
+  .lb-title {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #222;
+    border-bottom: 1px solid #999;
+    padding-bottom: 3px;
+    margin-bottom: 2px;
+  }
+
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    padding: 2px 0;
+    border-bottom: 1px solid #aaa;
+  }
+
+  .lb-row:last-child { border-bottom: none; }
+
+  .lb-rank {
+    min-width: 22px;
+    font-weight: bold;
+    color: #555;
+    text-align: right;
+  }
+
+  .lb-rank.gold   { color: #b8860b; }
+  .lb-rank.silver { color: #777; }
+  .lb-rank.bronze { color: #8b4513; }
+
+  .lb-pname {
+    flex: 1;
+    font-weight: bold;
+    color: #111;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .lb-pname.me { color: #1a5a1a; }
+
+  .lb-time {
+    color: #cc0000;
+    font-weight: bold;
+    min-width: 42px;
+    text-align: right;
+  }
+
+  .lb-wins {
+    color: #555;
+    min-width: 36px;
+    text-align: right;
+    font-size: 10px;
+  }
+
+  .lb-empty {
+    font-size: 11px;
+    color: #666;
+    font-family: 'Segoe UI', sans-serif;
+    font-style: italic;
+    text-align: center;
+    padding: 4px 0;
+  }
+
+  .lb-loading {
+    font-size: 11px;
+    color: #888;
+    font-family: 'Segoe UI', sans-serif;
+    text-align: center;
+    padding: 4px 0;
+  }
+
+  /* Name entry modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: 3px solid #555;
+    padding: 16px 18px;
+    width: min(320px, 90vw);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-title {
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #222;
+  }
+
+  .modal-subtitle {
+    font-size: 10px;
+    font-family: 'Segoe UI', sans-serif;
+    color: #555;
+    margin-top: -6px;
+  }
+
+  .modal-input {
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-left: 2px solid #373737;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    color: #fff;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 8px;
+    outline: none;
+    width: 100%;
+  }
+
+  .modal-input::placeholder { color: #bbb; font-weight: normal; }
+
+  .modal-input:focus {
+    background: #9a9a9a;
+    border-top-color: #222;
+    border-left-color: #222;
+  }
+
+  .modal-row { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .modal-btn {
+    font-size: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    padding: 5px 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background: #aaaaaa;
+    border-top: 3px solid #dddddd;
+    border-left: 3px solid #dddddd;
+    border-right: 3px solid #444;
+    border-bottom: 3px solid #444;
+    color: #333;
+  }
+
+  .modal-btn:hover { background: #bbbbbb; }
+
+  .modal-btn.primary {
+    background: #7ab87a;
+    border-top: 3px solid #aff5af;
+    border-left: 3px solid #aff5af;
+    border-right: 3px solid #2a5a2a;
+    border-bottom: 3px solid #2a5a2a;
     color: #1a3d1a;
   }
 
-  .tool-btn.active-flag {
-    background: #1a6b9a;
-    border-top: 3px solid #333;
-    border-left: 3px solid #333;
-    border-right: 3px solid #4db8e8;
-    border-bottom: 3px solid #4db8e8;
-    color: #d0f0ff;
+  .modal-btn.primary:hover { background: #8acc8a; }
+
+  .modal-btn:active, .modal-btn.primary:active {
+    border-top-color: #444; border-left-color: #444;
+    border-right-color: #ddd; border-bottom-color: #ddd;
   }
 
-  .tool-btn:not(.active-dig):not(.active-flag):hover { background: #bbbbbb; }
-
-  /* In flag mode, tint hidden cells blue so it's obvious */
-  .ms-grid.flag-mode .ms-cell.hidden {
-    background: #7a9ab0;
-  }
-  .ms-grid.flag-mode .ms-cell.hidden:hover {
-    background: #8ab0c8;
+  .modal-err {
+    font-size: 10px;
+    color: #cc2222;
+    font-family: 'Segoe UI', sans-serif;
+    min-height: 14px;
   }
 
+  /* Win overlay on the minesweeper area */
+  .win-score-flash {
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: #1a3d1a;
+    background: #aff5af;
+    border: 1px solid #5a8a5a;
+    padding: 3px 6px;
+    margin: 2px 0;
+    display: none;
+  }
+
+  .win-score-flash.show { display: block; }
+
+  /* Selected display */
   .selected-display {
     margin-top: 12px;
     background: #111;
@@ -362,10 +572,24 @@
 </head>
 <body>
 
+<!-- Name registration modal -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal-box">
+    <div class="modal-title">⛏️ Enter your name</div>
+    <div class="modal-subtitle">Your wins will be saved to the shared leaderboard.</div>
+    <input class="modal-input" id="name-input" maxlength="16" placeholder="Steve" autocomplete="off" spellcheck="false">
+    <div class="modal-err" id="name-err"></div>
+    <div class="modal-row">
+      <div class="modal-btn" id="name-cancel-btn" onclick="cancelNameModal()">Cancel</div>
+      <div class="modal-btn primary" onclick="confirmName()">Save ✓</div>
+    </div>
+  </div>
+</div>
+
 <div class="chest-wrapper">
   <div class="tabs">
     <div class="tab active" id="tab-large" onclick="switchTab('large')">Large Chest</div>
-    <div class="tab" id="tab-small" onclick="switchTab('small')">Small Chest</div>
+    <div class="tab" id="tab-small"  onclick="switchTab('small')">Small Chest</div>
     <div class="tab" id="tab-hopper" onclick="switchTab('hopper')">Hopper</div>
   </div>
   <div class="chest-container">
@@ -375,6 +599,22 @@
 
     <div class="divider"></div>
 
+    <!-- Player bar -->
+    <div class="player-bar">
+      <div class="player-name-display" id="player-display" onclick="openNameModal()">👤 Guest</div>
+      <div class="lb-toggle-btn" onclick="toggleLeaderboard()">🏆 Leaderboard</div>
+    </div>
+
+    <!-- Leaderboard panel -->
+    <div class="lb-panel" id="lb-panel">
+      <div class="lb-title">🏆 Best Times (9×9 · 12 mines)</div>
+      <div id="lb-rows"><div class="lb-loading">Loading…</div></div>
+    </div>
+
+    <!-- Win flash -->
+    <div class="win-score-flash" id="win-flash"></div>
+
+    <!-- HUD -->
     <div class="ms-hud" style="width:100%">
       <div class="ms-counter" id="mine-counter">12</div>
       <div class="ms-face-btn" id="face-btn" onclick="resetGame()" title="New Game">(╹ڡ╹ )</div>
@@ -383,8 +623,8 @@
 
     <div class="section-label">Inventory</div>
     <div class="tool-switcher">
-      <div class="tool-btn active-dig" id="tool-dig" onclick="setTool('dig')">&#9935; Dig</div>
-      <div class="tool-btn" id="tool-flag" onclick="setTool('flag')">&#128681; Flag</div>
+      <div class="tool-btn active-dig" id="tool-dig"  onclick="setTool('dig')">&#9935; Dig</div>
+      <div class="tool-btn"           id="tool-flag" onclick="setTool('flag')">&#128681; Flag</div>
       <span class="tool-label" id="tool-hint">tap to dig · hold/right-click to flag</span>
     </div>
     <div class="ms-grid" id="ms-grid"></div>
@@ -401,7 +641,6 @@
 <script>
   // ─── RESPONSIVE CELL SIZE ─────────────────────────────────────────
   function setCellSize() {
-    // 9 cells + 8*2px gaps + 2*10px padding + 2*3px border = 9c + 42
     const maxW = Math.min(window.innerWidth - 24, 400);
     const cell = Math.max(28, Math.min(Math.floor((maxW - 42) / 9), 40));
     document.documentElement.style.setProperty('--cell', cell + 'px');
@@ -418,257 +657,271 @@
     return audioCtx;
   }
 
-  // Light UI click for chest slot selection
   function playClick() {
-    const ctx = getCtx();
-    const now = ctx.currentTime;
-
-    // Crisp "tock" — short noise transient shaped like a mechanical button
-    const sr = ctx.sampleRate;
+    const ctx = getCtx(), now = ctx.currentTime, sr = ctx.sampleRate;
     const len = Math.floor(sr * 0.06);
     const buf = ctx.createBuffer(1, len, sr);
     const d = buf.getChannelData(0);
-    for (let i = 0; i < len; i++) {
-      const t = i / sr;
-      d[i] = (Math.random() * 2 - 1) * Math.exp(-t * 120);
-    }
-    const src = ctx.createBufferSource();
-    src.buffer = buf;
-
-    const bpf = ctx.createBiquadFilter();
-    bpf.type = 'bandpass';
-    bpf.frequency.value = 2200;
-    bpf.Q.value = 2.5;
-
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.45, now);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + 0.06);
-
+    for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.exp(-i/sr*120);
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const bpf = ctx.createBiquadFilter(); bpf.type='bandpass'; bpf.frequency.value=2200; bpf.Q.value=2.5;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.45,now); g.gain.exponentialRampToValueAtTime(0.0001,now+0.06);
     src.connect(bpf); bpf.connect(g); g.connect(ctx.destination);
-    src.start(now); src.stop(now + 0.07);
-
-    // Tiny low "tick" body under it
+    src.start(now); src.stop(now+0.07);
     const o = ctx.createOscillator(), og = ctx.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(820, now);
-    o.frequency.exponentialRampToValueAtTime(480, now + 0.04);
-    og.gain.setValueAtTime(0.12, now);
-    og.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
-    o.connect(og); og.connect(ctx.destination);
-    o.start(now); o.stop(now + 0.06);
+    o.type='sine'; o.frequency.setValueAtTime(820,now); o.frequency.exponentialRampToValueAtTime(480,now+0.04);
+    og.gain.setValueAtTime(0.12,now); og.gain.exponentialRampToValueAtTime(0.0001,now+0.05);
+    o.connect(og); og.connect(ctx.destination); o.start(now); o.stop(now+0.06);
   }
 
-  // Meaty dirt-dig sound for minesweeper reveals
   function playDig() {
-    const ctx = getCtx();
-    const sr = ctx.sampleRate;
-    const now = ctx.currentTime;
-
-    // ── MASTER BUS ──────────────────────────────────────────────────
-    const master = ctx.createGain();
-    master.gain.value = 1.0;
-    master.connect(ctx.destination);
-
-    // ── CONVOLUTION REVERB (short cave/room tail) ────────────────────
-    const revLen = Math.floor(sr * 0.55);
+    const ctx = getCtx(), sr = ctx.sampleRate, now = ctx.currentTime;
+    const master = ctx.createGain(); master.gain.value=1.0; master.connect(ctx.destination);
+    const revLen = Math.floor(sr*0.55);
     const revBuf = ctx.createBuffer(2, revLen, sr);
-    for (let ch = 0; ch < 2; ch++) {
+    for (let ch=0; ch<2; ch++) {
       const d = revBuf.getChannelData(ch);
-      for (let i = 0; i < revLen; i++) {
-        // exponential decay with early reflection spikes
-        const t = i / sr;
-        const earlyRef = (i < sr * 0.02) ? Math.exp(-t * 60) * 1.4 : 0;
-        d[i] = (Math.random() * 2 - 1) * (Math.exp(-t * 7) + earlyRef);
+      for (let i=0; i<revLen; i++) {
+        const t=i/sr, earlyRef=(i<sr*0.02)?Math.exp(-t*60)*1.4:0;
+        d[i]=(Math.random()*2-1)*(Math.exp(-t*7)+earlyRef);
       }
     }
-    const reverb = ctx.createConvolver();
-    reverb.buffer = revBuf;
-    const revGain = ctx.createGain();
-    revGain.gain.value = 0.38;
-    reverb.connect(revGain);
-    revGain.connect(master);
-
-    // ── HELPER: send a buffer through the chain ──────────────────────
-    function spawnNoise(durationSec, buildFn, lpFreq, lpQ, peakFreq, peakGainDb, gainPeak, gainEnd) {
-      const len = Math.floor(sr * durationSec);
-      const b = ctx.createBuffer(1, len, sr);
-      buildFn(b.getChannelData(0), len, sr);
-
-      const src = ctx.createBufferSource();
-      src.buffer = b;
-
-      const lpf = ctx.createBiquadFilter();
-      lpf.type = 'lowpass'; lpf.frequency.value = lpFreq; lpf.Q.value = lpQ;
-
-      const peak = ctx.createBiquadFilter();
-      peak.type = 'peaking'; peak.frequency.value = peakFreq;
-      peak.gain.value = peakGainDb; peak.Q.value = 1.4;
-
-      const g = ctx.createGain();
-      g.gain.setValueAtTime(gainPeak, now);
-      g.gain.exponentialRampToValueAtTime(0.0001, now + durationSec);
-
-      src.connect(lpf); lpf.connect(peak); peak.connect(g);
-      g.connect(master);
-      g.connect(reverb); // send to reverb too
-      src.start(now); src.stop(now + durationSec + 0.01);
+    const reverb=ctx.createConvolver(); reverb.buffer=revBuf;
+    const revGain=ctx.createGain(); revGain.gain.value=0.38;
+    reverb.connect(revGain); revGain.connect(master);
+    function spawnNoise(dur,buildFn,lpF,lpQ,pkF,pkG,gainPk) {
+      const len=Math.floor(sr*dur), b=ctx.createBuffer(1,len,sr);
+      buildFn(b.getChannelData(0),len,sr);
+      const src=ctx.createBufferSource(); src.buffer=b;
+      const lpf=ctx.createBiquadFilter(); lpf.type='lowpass'; lpf.frequency.value=lpF; lpf.Q.value=lpQ;
+      const pk=ctx.createBiquadFilter(); pk.type='peaking'; pk.frequency.value=pkF; pk.gain.value=pkG; pk.Q.value=1.4;
+      const g=ctx.createGain(); g.gain.setValueAtTime(gainPk,now); g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+      src.connect(lpf); lpf.connect(pk); pk.connect(g); g.connect(master); g.connect(reverb);
+      src.start(now); src.stop(now+dur+0.01);
     }
-
-    // ── LAYER 1: PUNCHY IMPACT — sharp thwack ────────────────────────
-    spawnNoise(0.22,
-      (d, len, sr) => {
-        for (let i = 0; i < len; i++) {
-          const t = i / sr;
-          d[i] = (Math.random() * 2 - 1) * (Math.exp(-t * 45) + Math.exp(-t * 12) * 0.5);
-        }
-        // pebble pops scattered in first 80ms
-        [0.003, 0.014, 0.028, 0.048, 0.072].forEach(ct => {
-          const ci = Math.floor(ct * sr);
-          for (let k = 0; k < Math.floor(sr * 0.007); k++)
-            if (ci + k < len)
-              d[ci + k] += (Math.random() * 2 - 1) * Math.exp(-k / (sr * 0.0025)) * 1.1;
-        });
-      },
-      1100, 1.1, 220, 11, 1.1, 0.001
-    );
-
-    // ── LAYER 2: CRUNCH TAIL — longer gritty rumble ──────────────────
-    spawnNoise(0.28,
-      (d, len, sr) => {
-        for (let i = 0; i < len; i++) {
-          const t = i / sr;
-          d[i] = (Math.random() * 2 - 1) * Math.exp(-t * 9) * 0.7;
-        }
-      },
-      600, 0.9, 150, 8, 0.7, 0.001
-    );
-
-    // ── LAYER 3: SUB THUD — satisfying low body ──────────────────────
-    const subOsc = ctx.createOscillator();
-    const subGain = ctx.createGain();
-    subOsc.type = 'sine';
-    subOsc.frequency.setValueAtTime(95, now);
-    subOsc.frequency.exponentialRampToValueAtTime(38, now + 0.14);
-    subGain.gain.setValueAtTime(0.55, now);
-    subGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.18);
-    subOsc.connect(subGain);
-    subGain.connect(master);
-    subGain.connect(reverb);
-    subOsc.start(now); subOsc.stop(now + 0.19);
-
-    // ── LAYER 4: HARMONIC BODY — gives it earthy "wood/stone" tone ──
-    const bodyOsc = ctx.createOscillator();
-    const bodyGain = ctx.createGain();
-    bodyOsc.type = 'triangle';
-    bodyOsc.frequency.setValueAtTime(200, now);
-    bodyOsc.frequency.exponentialRampToValueAtTime(110, now + 0.09);
-    bodyGain.gain.setValueAtTime(0.22, now);
-    bodyGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
-    bodyOsc.connect(bodyGain);
-    bodyGain.connect(master);
-    bodyGain.connect(reverb);
-    bodyOsc.start(now); bodyOsc.stop(now + 0.13);
+    spawnNoise(0.22,(d,len,sr)=>{
+      for(let i=0;i<len;i++){const t=i/sr; d[i]=(Math.random()*2-1)*(Math.exp(-t*45)+Math.exp(-t*12)*0.5);}
+      [0.003,0.014,0.028,0.048,0.072].forEach(ct=>{
+        const ci=Math.floor(ct*sr);
+        for(let k=0;k<Math.floor(sr*0.007);k++) if(ci+k<len) d[ci+k]+=(Math.random()*2-1)*Math.exp(-k/(sr*0.0025))*1.1;
+      });
+    },1100,1.1,220,11,1.1);
+    spawnNoise(0.28,(d,len,sr)=>{for(let i=0;i<len;i++){const t=i/sr;d[i]=(Math.random()*2-1)*Math.exp(-t*9)*0.7;}},600,0.9,150,8,0.7);
+    const subO=ctx.createOscillator(),subG=ctx.createGain();
+    subO.type='sine'; subO.frequency.setValueAtTime(95,now); subO.frequency.exponentialRampToValueAtTime(38,now+0.14);
+    subG.gain.setValueAtTime(0.55,now); subG.gain.exponentialRampToValueAtTime(0.0001,now+0.18);
+    subO.connect(subG); subG.connect(master); subG.connect(reverb); subO.start(now); subO.stop(now+0.19);
+    const bO=ctx.createOscillator(),bG=ctx.createGain();
+    bO.type='triangle'; bO.frequency.setValueAtTime(200,now); bO.frequency.exponentialRampToValueAtTime(110,now+0.09);
+    bG.gain.setValueAtTime(0.22,now); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.12);
+    bO.connect(bG); bG.connect(master); bG.connect(reverb); bO.start(now); bO.stop(now+0.13);
   }
 
   function playFlag(placing) {
     const ctx = getCtx();
     if (placing) {
-      // Thwip up + thud
-      const o1 = ctx.createOscillator(), g1 = ctx.createGain();
-      o1.connect(g1); g1.connect(ctx.destination);
-      o1.type = 'square';
-      o1.frequency.setValueAtTime(200, ctx.currentTime);
-      o1.frequency.exponentialRampToValueAtTime(800, ctx.currentTime + 0.07);
-      g1.gain.setValueAtTime(0.2, ctx.currentTime);
-      g1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.09);
-      o1.start(); o1.stop(ctx.currentTime + 0.1);
-
-      const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-      o2.connect(g2); g2.connect(ctx.destination);
-      o2.type = 'sine';
-      o2.frequency.setValueAtTime(120, ctx.currentTime + 0.05);
-      o2.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.18);
-      g2.gain.setValueAtTime(0.35, ctx.currentTime + 0.05);
-      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.2);
-      o2.start(ctx.currentTime + 0.05); o2.stop(ctx.currentTime + 0.21);
+      const o1=ctx.createOscillator(),g1=ctx.createGain();
+      o1.connect(g1); g1.connect(ctx.destination); o1.type='square';
+      o1.frequency.setValueAtTime(200,ctx.currentTime); o1.frequency.exponentialRampToValueAtTime(800,ctx.currentTime+0.07);
+      g1.gain.setValueAtTime(0.2,ctx.currentTime); g1.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.09);
+      o1.start(); o1.stop(ctx.currentTime+0.1);
+      const o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination); o2.type='sine';
+      o2.frequency.setValueAtTime(120,ctx.currentTime+0.05); o2.frequency.exponentialRampToValueAtTime(50,ctx.currentTime+0.18);
+      g2.gain.setValueAtTime(0.35,ctx.currentTime+0.05); g2.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
+      o2.start(ctx.currentTime+0.05); o2.stop(ctx.currentTime+0.21);
     } else {
-      // Descending whoosh = removal
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'triangle';
-      o.frequency.setValueAtTime(700, ctx.currentTime);
-      o.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.1);
-      g.gain.setValueAtTime(0.18, ctx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.12);
-      o.start(); o.stop(ctx.currentTime + 0.13);
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='triangle';
+      o.frequency.setValueAtTime(700,ctx.currentTime); o.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.1);
+      g.gain.setValueAtTime(0.18,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.12);
+      o.start(); o.stop(ctx.currentTime+0.13);
     }
   }
 
   function playTab() {
-    const ctx = getCtx();
-    // Crispy percussive "tock" using filtered noise
-    const buf = ctx.createBuffer(1, Math.floor(ctx.sampleRate * 0.05), ctx.sampleRate);
-    const data = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++)
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.007));
-    const src = ctx.createBufferSource();
-    const filt = ctx.createBiquadFilter();
-    const g = ctx.createGain();
-    filt.type = 'bandpass'; filt.frequency.value = 1400; filt.Q.value = 2.5;
-    src.buffer = buf;
-    src.connect(filt); filt.connect(g); g.connect(ctx.destination);
-    g.gain.setValueAtTime(0.7, ctx.currentTime);
-    src.start(); src.stop(ctx.currentTime + 0.06);
+    const ctx=getCtx();
+    const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.05),ctx.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.007));
+    const src=ctx.createBufferSource(), filt=ctx.createBiquadFilter(), g=ctx.createGain();
+    filt.type='bandpass'; filt.frequency.value=1400; filt.Q.value=2.5;
+    src.buffer=buf; src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.7,ctx.currentTime);
+    src.start(); src.stop(ctx.currentTime+0.06);
   }
 
   function playDeath() {
-    const ctx = getCtx();
-    [[0, 300, 250, 0.18], [0.22, 250, 200, 0.18], [0.44, 200, 160, 0.18], [0.66, 160, 80, 0.55]]
-      .forEach(([t, f0, f1, dur]) => {
-        const o = ctx.createOscillator(), g = ctx.createGain();
-        o.connect(g); g.connect(ctx.destination);
-        o.type = 'sawtooth';
-        o.frequency.setValueAtTime(f0, ctx.currentTime + t);
-        o.frequency.exponentialRampToValueAtTime(f1, ctx.currentTime + t + dur);
-        g.gain.setValueAtTime(0.3, ctx.currentTime + t);
-        g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + dur + 0.05);
-        o.start(ctx.currentTime + t); o.stop(ctx.currentTime + t + dur + 0.06);
-      });
+    const ctx=getCtx();
+    [[0,300,250,0.18],[0.22,250,200,0.18],[0.44,200,160,0.18],[0.66,160,80,0.55]].forEach(([t,f0,f1,dur])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='sawtooth';
+      o.frequency.setValueAtTime(f0,ctx.currentTime+t); o.frequency.exponentialRampToValueAtTime(f1,ctx.currentTime+t+dur);
+      g.gain.setValueAtTime(0.3,ctx.currentTime+t); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+dur+0.05);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+dur+0.06);
+    });
   }
 
   function playReset() {
-    const ctx = getCtx();
-    [523, 659, 784, 1047].forEach((freq, i) => {
-      const o = ctx.createOscillator(), g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'square';
-      const t = ctx.currentTime + i * 0.1;
-      o.frequency.setValueAtTime(freq, t);
-      g.gain.setValueAtTime(0.15, t);
-      g.gain.exponentialRampToValueAtTime(0.001, t + 0.18);
-      o.start(t); o.stop(t + 0.19);
+    const ctx=getCtx();
+    [523,659,784,1047].forEach((freq,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='square';
+      const t=ctx.currentTime+i*0.1;
+      o.frequency.setValueAtTime(freq,t); g.gain.setValueAtTime(0.15,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+      o.start(t); o.stop(t+0.19);
     });
   }
 
   function playWin() {
-    const ctx = getCtx();
-    const o = ctx.createOscillator(), g = ctx.createGain();
-    o.connect(g); g.connect(ctx.destination);
-    o.type = 'sine';
-    o.frequency.setValueAtTime(400, ctx.currentTime);
-    o.frequency.exponentialRampToValueAtTime(1600, ctx.currentTime + 0.5);
-    g.gain.setValueAtTime(0.3, ctx.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.55);
-    o.start(); o.stop(ctx.currentTime + 0.56);
-    [0.55, 0.65, 0.75].forEach((t, i) => {
-      const o2 = ctx.createOscillator(), g2 = ctx.createGain();
-      o2.connect(g2); g2.connect(ctx.destination);
-      o2.type = 'triangle';
-      o2.frequency.value = [1047, 1319, 1568][i];
-      g2.gain.setValueAtTime(0.2, ctx.currentTime + t);
-      g2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.15);
-      o2.start(ctx.currentTime + t); o2.stop(ctx.currentTime + t + 0.16);
+    const ctx=getCtx();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); o.type='sine';
+    o.frequency.setValueAtTime(400,ctx.currentTime); o.frequency.exponentialRampToValueAtTime(1600,ctx.currentTime+0.5);
+    g.gain.setValueAtTime(0.3,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.55);
+    o.start(); o.stop(ctx.currentTime+0.56);
+    [0.55,0.65,0.75].forEach((t,i)=>{
+      const o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination); o2.type='triangle';
+      o2.frequency.value=[1047,1319,1568][i];
+      g2.gain.setValueAtTime(0.2,ctx.currentTime+t); g2.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.15);
+      o2.start(ctx.currentTime+t); o2.stop(ctx.currentTime+t+0.16);
     });
+  }
+
+  // ─── PLAYER REGISTRATION ──────────────────────────────────────────
+  let currentPlayer = null; // null = guest
+  let isEditingName = false; // true when changing name (vs first time)
+
+  function openNameModal(editing = false) {
+    isEditingName = editing;
+    const modal = document.getElementById('name-modal');
+    const input = document.getElementById('name-input');
+    const cancelBtn = document.getElementById('name-cancel-btn');
+    const err = document.getElementById('name-err');
+    input.value = editing && currentPlayer ? currentPlayer : '';
+    err.textContent = '';
+    cancelBtn.style.display = editing ? '' : 'none';
+    modal.classList.add('open');
+    setTimeout(() => input.focus(), 80);
+  }
+
+  function cancelNameModal() {
+    document.getElementById('name-modal').classList.remove('open');
+  }
+
+  function confirmName() {
+    const input = document.getElementById('name-input');
+    const err = document.getElementById('name-err');
+    const raw = input.value.trim();
+    if (!raw) { err.textContent = 'Please enter a name.'; return; }
+    if (raw.length < 2) { err.textContent = 'Name must be at least 2 characters.'; return; }
+    if (!/^[a-zA-Z0-9_\- ]+$/.test(raw)) { err.textContent = 'Letters, numbers, spaces, _ and - only.'; return; }
+    currentPlayer = raw;
+    document.getElementById('player-display').textContent = '👤 ' + currentPlayer;
+    document.getElementById('name-modal').classList.remove('open');
+    loadLeaderboard();
+  }
+
+  // Allow Enter key in input
+  document.getElementById('name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmName();
+    if (e.key === 'Escape') cancelNameModal();
+  });
+
+  // ─── LEADERBOARD ──────────────────────────────────────────────────
+  const LB_KEY = 'ms-leaderboard-v1';
+
+  function toggleLeaderboard() {
+    const panel = document.getElementById('lb-panel');
+    const isOpen = panel.classList.contains('open');
+    if (isOpen) {
+      panel.classList.remove('open');
+    } else {
+      panel.classList.add('open');
+      loadLeaderboard();
+    }
+    playTab();
+  }
+
+  async function loadLeaderboard() {
+    const rowsEl = document.getElementById('lb-rows');
+    rowsEl.innerHTML = '<div class="lb-loading">Loading…</div>';
+    let entries = [];
+    try {
+      const result = await window.storage.get(LB_KEY, true);
+      if (result && result.value) {
+        entries = JSON.parse(result.value);
+      }
+    } catch(e) {
+      // No entries yet — that's fine
+    }
+    renderLeaderboard(entries);
+  }
+
+  function renderLeaderboard(entries) {
+    const rowsEl = document.getElementById('lb-rows');
+    if (!entries || entries.length === 0) {
+      rowsEl.innerHTML = '<div class="lb-empty">No scores yet. Be the first to win!</div>';
+      return;
+    }
+    // Sort by best time (ascending), then by most wins
+    entries.sort((a, b) => a.best - b.best || b.wins - a.wins);
+    const top = entries.slice(0, 10);
+    const medals = ['gold','silver','bronze'];
+    rowsEl.innerHTML = top.map((e, i) => {
+      const rankClass = i < 3 ? medals[i] : '';
+      const rankSymbol = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+      const isMe = currentPlayer && e.name === currentPlayer;
+      const timeStr = String(e.best).padStart(3,'0') + 's';
+      return `<div class="lb-row">
+        <span class="lb-rank ${rankClass}">${rankSymbol}</span>
+        <span class="lb-pname ${isMe ? 'me' : ''}">${escHtml(e.name)}${isMe ? ' ★' : ''}</span>
+        <span class="lb-time">${timeStr}</span>
+        <span class="lb-wins">${e.wins}W</span>
+      </div>`;
+    }).join('');
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function submitScore(timeSeconds) {
+    if (!currentPlayer) return; // guest — don't save
+    try {
+      let entries = [];
+      try {
+        const result = await window.storage.get(LB_KEY, true);
+        if (result && result.value) entries = JSON.parse(result.value);
+      } catch(e) {}
+
+      const idx = entries.findIndex(e => e.name === currentPlayer);
+      if (idx >= 0) {
+        entries[idx].wins += 1;
+        if (timeSeconds < entries[idx].best) entries[idx].best = timeSeconds;
+      } else {
+        entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
+      }
+
+      await window.storage.set(LB_KEY, JSON.stringify(entries), true);
+
+      // Show flash
+      const flash = document.getElementById('win-flash');
+      const isNewBest = idx < 0 || timeSeconds <= entries[idx].best;
+      flash.textContent = isNewBest
+        ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
+        : `✓ ${currentPlayer}: ${timeSeconds}s saved`;
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 3500);
+
+      // Refresh leaderboard if open
+      if (document.getElementById('lb-panel').classList.contains('open')) {
+        renderLeaderboard(entries);
+      }
+    } catch(e) {
+      console.warn('Score save failed', e);
+    }
   }
 
   // ─── CHEST ────────────────────────────────────────────────────────
@@ -679,14 +932,14 @@
     if (chestSelected.size === 0) {
       label.textContent = 'Selected chest slots: none | Total: 0';
     } else {
-      const sorted = [...chestSelected].sort((a, b) => a - b);
+      const sorted = [...chestSelected].sort((a,b)=>a-b);
       label.textContent = 'Selected chest slots: ' + sorted.join(', ') + ' | Total: ' + sorted.length;
     }
   }
 
   function clearChestSelection() {
     chestSelected.clear();
-    document.querySelectorAll('#chest-grid .slot.selected').forEach(s => s.classList.remove('selected'));
+    document.querySelectorAll('#chest-grid .slot.selected').forEach(s=>s.classList.remove('selected'));
     updateChestLabel();
   }
 
@@ -699,13 +952,9 @@
 
   function switchTab(type) {
     if (type === currentTab) return;
-    playTab();
-    currentTab = type;
-    chestSelected.clear();
-    updateChestLabel();
-    ['large', 'small', 'hopper'].forEach(t =>
-      document.getElementById('tab-' + t).classList.toggle('active', t === type)
-    );
+    playTab(); currentTab = type;
+    chestSelected.clear(); updateChestLabel();
+    ['large','small','hopper'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('active',t===type));
     buildChestGrid();
   }
 
@@ -714,16 +963,16 @@
     const chestGrid = document.getElementById('chest-grid');
     chestGrid.innerHTML = '';
     chestGrid.style.gridTemplateColumns = `repeat(${cfg.cols}, var(--cell))`;
-    chestGrid.style.justifyContent = currentTab === 'hopper' ? 'center' : 'start';
+    chestGrid.style.justifyContent = currentTab==='hopper'?'center':'start';
     document.getElementById('chest-label').textContent = cfg.label;
-    for (let i = 0; i < cfg.slots; i++) {
+    for (let i=0; i<cfg.slots; i++) {
       const slot = document.createElement('div');
       slot.className = 'slot';
       slot.textContent = i;
-      slot.addEventListener('click', () => {
+      slot.addEventListener('click', ()=>{
         playClick();
         slot.classList.toggle('selected');
-        chestSelected.has(i) ? chestSelected.delete(i) : chestSelected.add(i);
+        chestSelected.has(i)?chestSelected.delete(i):chestSelected.add(i);
         updateChestLabel();
       });
       chestGrid.appendChild(slot);
@@ -734,239 +983,140 @@
 
   const hotbarGrid = document.getElementById('hotbar-grid');
   hotbarGrid.style.gridTemplateColumns = 'repeat(9, var(--cell))';
-  for (let i = 0; i < 9; i++) {
-    const s = document.createElement('div');
-    s.className = 'slot';
-    s.style.cursor = 'default';
+  for (let i=0; i<9; i++) {
+    const s=document.createElement('div'); s.className='slot'; s.style.cursor='default';
     hotbarGrid.appendChild(s);
   }
 
   // ─── MINESWEEPER ──────────────────────────────────────────────────
-  const ROWS = 9, COLS = 9, TOTAL_MINES = 12;
-  const LONG_PRESS_MS = 500;
-
-  // ─── TOOL SWITCHER ───────────────────────────────────────────────
-  let flagMode = false;
+  const ROWS=9, COLS=9, TOTAL_MINES=12, LONG_PRESS_MS=500;
+  let flagMode=false, board=[], gameOver=false, gameWon=false,
+      firstClick=true, flagCount=0, timerVal=0, timerInterval=null;
 
   function setTool(tool) {
-    flagMode = (tool === 'flag');
-    const digBtn  = document.getElementById('tool-dig');
-    const flagBtn = document.getElementById('tool-flag');
-    const hint    = document.getElementById('tool-hint');
-    const msGrid  = document.getElementById('ms-grid');
-    digBtn.className  = 'tool-btn' + (flagMode ? '' : ' active-dig');
-    flagBtn.className = 'tool-btn' + (flagMode ? ' active-flag' : '');
-    if (flagMode) {
-      msGrid.classList.add('flag-mode');
-      hint.textContent = 'tap to flag · right-click to dig';
-    } else {
-      msGrid.classList.remove('flag-mode');
-      hint.textContent = 'tap to dig · hold/right-click to flag';
-    }
+    flagMode=(tool==='flag');
+    const msGrid=document.getElementById('ms-grid');
+    document.getElementById('tool-dig').className  = 'tool-btn'+(flagMode?'':' active-dig');
+    document.getElementById('tool-flag').className = 'tool-btn'+(flagMode?' active-flag':'');
+    document.getElementById('tool-hint').textContent = flagMode
+      ? 'tap to flag · right-click to dig'
+      : 'tap to dig · hold/right-click to flag';
+    flagMode ? msGrid.classList.add('flag-mode') : msGrid.classList.remove('flag-mode');
     playTab();
   }
 
-  let board = [], gameOver = false, gameWon = false,
-      firstClick = true, flagCount = 0,
-      timerVal = 0, timerInterval = null;
-
   function resetGame() {
-    clearInterval(timerInterval);
-    playReset();
-    timerVal = 0; gameOver = false; gameWon = false;
-    firstClick = true; flagCount = 0;
-    document.getElementById('mine-counter').textContent = String(TOTAL_MINES).padStart(3, '0');
-    document.getElementById('timer-display').textContent = '000';
-    document.getElementById('face-btn').textContent = '(╹ڡ╹ )';
+    clearInterval(timerInterval); playReset();
+    timerVal=0; gameOver=false; gameWon=false; firstClick=true; flagCount=0;
+    document.getElementById('mine-counter').textContent=String(TOTAL_MINES).padStart(3,'0');
+    document.getElementById('timer-display').textContent='000';
+    document.getElementById('face-btn').textContent='(╹ڡ╹ )';
+    document.getElementById('win-flash').classList.remove('show');
     initBoard(); renderBoard();
   }
 
   function initBoard() {
-    board = [];
-    for (let r = 0; r < ROWS; r++) {
-      board[r] = [];
-      for (let c = 0; c < COLS; c++)
-        board[r][c] = { mine: false, revealed: false, flagged: false, count: 0 };
-    }
+    board=[];
+    for(let r=0;r<ROWS;r++){board[r]=[];for(let c=0;c<COLS;c++)board[r][c]={mine:false,revealed:false,flagged:false,count:0};}
   }
 
-  function placeMines(safeR, safeC) {
-    const safe = new Set();
-    for (let dr = -1; dr <= 1; dr++)
-      for (let dc = -1; dc <= 1; dc++) {
-        const nr = safeR+dr, nc = safeC+dc;
-        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS) safe.add(nr*COLS+nc);
-      }
-    let placed = 0;
-    while (placed < TOTAL_MINES) {
-      const r = Math.floor(Math.random()*ROWS), c = Math.floor(Math.random()*COLS);
-      if (!board[r][c].mine && !safe.has(r*COLS+c)) { board[r][c].mine = true; placed++; }
-    }
-    for (let r = 0; r < ROWS; r++)
-      for (let c = 0; c < COLS; c++)
-        if (!board[r][c].mine) board[r][c].count = countNeighborMines(r, c);
+  function placeMines(safeR,safeC) {
+    const safe=new Set();
+    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=safeR+dr,nc=safeC+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS)safe.add(nr*COLS+nc);}
+    let placed=0;
+    while(placed<TOTAL_MINES){const r=Math.floor(Math.random()*ROWS),c=Math.floor(Math.random()*COLS);if(!board[r][c].mine&&!safe.has(r*COLS+c)){board[r][c].mine=true;placed++;}}
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!board[r][c].mine)board[r][c].count=countNeighborMines(r,c);
   }
 
-  function countNeighborMines(r, c) {
-    let n = 0;
-    for (let dr = -1; dr <= 1; dr++)
-      for (let dc = -1; dc <= 1; dc++) {
-        const nr=r+dr, nc=c+dc;
-        if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc].mine) n++;
-      }
-    return n;
+  function countNeighborMines(r,c) {
+    let n=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc].mine)n++;}return n;
   }
 
-  function reveal(r, c) {
-    if (r<0||r>=ROWS||c<0||c>=COLS) return;
-    const cell = board[r][c];
-    if (cell.revealed || cell.flagged) return;
-    cell.revealed = true;
-    if (cell.count === 0 && !cell.mine)
-      for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) reveal(r+dr,c+dc);
+  function reveal(r,c) {
+    if(r<0||r>=ROWS||c<0||c>=COLS)return;const cell=board[r][c];
+    if(cell.revealed||cell.flagged)return;cell.revealed=true;
+    if(cell.count===0&&!cell.mine)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)reveal(r+dr,c+dc);
   }
 
   function checkWin() {
-    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
-      if (!board[r][c].mine && !board[r][c].revealed) return false;
-    return true;
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!board[r][c].mine&&!board[r][c].revealed)return false;return true;
   }
 
-  function handleClick(r, c) {
-    if (gameOver || gameWon) return;
-    const cell = board[r][c];
-    if (cell.revealed || cell.flagged) return;
-
-    if (firstClick) {
-      firstClick = false;
-      placeMines(r, c);
-      timerInterval = setInterval(() => {
-        timerVal = Math.min(timerVal+1, 999);
-        document.getElementById('timer-display').textContent = String(timerVal).padStart(3,'0');
-      }, 1000);
+  function handleClick(r,c) {
+    if(gameOver||gameWon)return;
+    const cell=board[r][c];if(cell.revealed||cell.flagged)return;
+    if(firstClick){
+      firstClick=false;placeMines(r,c);
+      timerInterval=setInterval(()=>{timerVal=Math.min(timerVal+1,999);document.getElementById('timer-display').textContent=String(timerVal).padStart(3,'0');},1000);
     }
-
-    if (cell.mine) {
-      cell.revealed = true; gameOver = true;
-      clearInterval(timerInterval);
-      playDeath();
-      document.getElementById('face-btn').textContent = "(┬┬﹏┬┬)";
-      revealAllMines(r, c); renderBoard(); return;
+    if(cell.mine){
+      cell.revealed=true;gameOver=true;clearInterval(timerInterval);
+      playDeath();document.getElementById('face-btn').textContent="(┬┬﹏┬┬)";
+      revealAllMines(r,c);renderBoard();return;
     }
-
-    reveal(r, c);
-    playDig();
-
-    if (checkWin()) {
-      gameWon = true; clearInterval(timerInterval);
-      playWin();
-      document.getElementById('face-btn').textContent = "~\\(≧▽≦)/~";
-      for (let rr=0;rr<ROWS;rr++) for (let cc=0;cc<COLS;cc++)
-        if (board[rr][cc].mine) board[rr][cc].flagged = true;
-      flagCount = TOTAL_MINES;
-      document.getElementById('mine-counter').textContent = '000';
+    reveal(r,c);playDig();
+    if(checkWin()){
+      gameWon=true;clearInterval(timerInterval);playWin();
+      document.getElementById('face-btn').textContent="~\\(≧▽≦)/~";
+      for(let rr=0;rr<ROWS;rr++)for(let cc=0;cc<COLS;cc++)if(board[rr][cc].mine)board[rr][cc].flagged=true;
+      flagCount=TOTAL_MINES;document.getElementById('mine-counter').textContent='000';
+      submitScore(timerVal); // 🏆 save score
     }
     renderBoard();
   }
 
-  function handleFlag(r, c) {
-    if (gameOver || gameWon) return;
-    const cell = board[r][c];
-    if (cell.revealed) return;
-    if (!cell.flagged && flagCount >= TOTAL_MINES) return;
-    cell.flagged = !cell.flagged;
-    flagCount += cell.flagged ? 1 : -1;
-    playFlag(cell.flagged);
-    document.getElementById('mine-counter').textContent =
-      String(Math.max(0, TOTAL_MINES - flagCount)).padStart(3,'0');
+  function handleFlag(r,c) {
+    if(gameOver||gameWon)return;const cell=board[r][c];if(cell.revealed)return;
+    if(!cell.flagged&&flagCount>=TOTAL_MINES)return;
+    cell.flagged=!cell.flagged;flagCount+=cell.flagged?1:-1;playFlag(cell.flagged);
+    document.getElementById('mine-counter').textContent=String(Math.max(0,TOTAL_MINES-flagCount)).padStart(3,'0');
     renderBoard();
   }
 
-  function revealAllMines(hitR, hitC) {
-    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
-      const cell = board[r][c];
-      if (cell.mine && !(r===hitR&&c===hitC)) cell.revealed = true;
-      if (!cell.mine && cell.flagged) cell.wrongFlag = true;
+  function revealAllMines(hitR,hitC) {
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+      const cell=board[r][c];
+      if(cell.mine&&!(r===hitR&&c===hitC))cell.revealed=true;
+      if(!cell.mine&&cell.flagged)cell.wrongFlag=true;
     }
   }
 
-  const NUM_COLORS = ['','#1111cc','#117711','#cc1111','#111177','#771111','#117777','#111111','#777777'];
+  const NUM_COLORS=['','#1111cc','#117711','#cc1111','#111177','#771111','#117777','#111111','#777777'];
 
   function renderBoard() {
-    const grid = document.getElementById('ms-grid');
-    grid.innerHTML = '';
-    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
-      const cell = board[r][c];
-      const el = document.createElement('div');
-      el.className = 'ms-cell';
-
-      if (cell.revealed) {
-        if (cell.mine) { el.classList.add('mine-hit'); el.textContent = '💣'; }
-        else {
-          el.classList.add('revealed');
-          if (cell.count > 0) { el.textContent = cell.count; el.style.color = NUM_COLORS[cell.count]; }
-        }
-      } else if (cell.flagged) {
-        el.classList.add('flagged'); el.textContent = '🚩';
-      } else if (cell.wrongFlag) {
-        el.classList.add('revealed'); el.textContent = '❌';
-      } else {
-        el.classList.add('hidden');
-      }
-
-      const rr=r, cc=c;
-
-      // Desktop: right-click always flags regardless of mode
-      el.addEventListener('click', () => {
-        if (flagMode) handleFlag(rr, cc);
-        else handleClick(rr, cc);
-      });
-      el.addEventListener('contextmenu', e => {
+    const grid=document.getElementById('ms-grid');grid.innerHTML='';
+    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+      const cell=board[r][c],el=document.createElement('div');el.className='ms-cell';
+      if(cell.revealed){
+        if(cell.mine){el.classList.add('mine-hit');el.textContent='💣';}
+        else{el.classList.add('revealed');if(cell.count>0){el.textContent=cell.count;el.style.color=NUM_COLORS[cell.count];}}
+      }else if(cell.flagged){el.classList.add('flagged');el.textContent='🚩';}
+      else if(cell.wrongFlag){el.classList.add('revealed');el.textContent='❌';}
+      else{el.classList.add('hidden');}
+      const rr=r,cc=c;
+      el.addEventListener('click',()=>{if(flagMode)handleFlag(rr,cc);else handleClick(rr,cc);});
+      el.addEventListener('contextmenu',e=>{e.preventDefault();if(flagMode)handleClick(rr,cc);else handleFlag(rr,cc);});
+      let pressTimer=null,didLongPress=false;
+      el.addEventListener('touchstart',e=>{
         e.preventDefault();
-        if (flagMode) handleClick(rr, cc);
-        else handleFlag(rr, cc);
-      });
-
-      // Mobile: in dig mode — tap=dig, hold=flag
-      //         in flag mode — tap=flag, hold=dig
-      let pressTimer = null, didLongPress = false;
-
-      el.addEventListener('touchstart', e => {
-        e.preventDefault();
-        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-        didLongPress = false;
-        if (!cell.revealed) el.classList.add('pressing');
-        pressTimer = setTimeout(() => {
-          didLongPress = true;
-          el.classList.remove('pressing');
-          // Long press = opposite of current mode
-          if (flagMode) handleClick(rr, cc);
-          else handleFlag(rr, cc);
-        }, LONG_PRESS_MS);
-      }, { passive: false });
-
-      el.addEventListener('touchend', e => {
-        e.preventDefault();
-        clearTimeout(pressTimer);
-        el.classList.remove('pressing');
-        if (!didLongPress) {
-          // Tap = current mode
-          if (flagMode) handleFlag(rr, cc);
-          else handleClick(rr, cc);
-        }
-      }, { passive: false });
-
-      el.addEventListener('touchmove', e => {
-        clearTimeout(pressTimer);
-        el.classList.remove('pressing');
-        didLongPress = true; // cancel action on scroll
-      }, { passive: false });
-
+        if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+        didLongPress=false;
+        if(!cell.revealed)el.classList.add('pressing');
+        pressTimer=setTimeout(()=>{didLongPress=true;el.classList.remove('pressing');if(flagMode)handleClick(rr,cc);else handleFlag(rr,cc);},LONG_PRESS_MS);
+      },{passive:false});
+      el.addEventListener('touchend',e=>{
+        e.preventDefault();clearTimeout(pressTimer);el.classList.remove('pressing');
+        if(!didLongPress){if(flagMode)handleFlag(rr,cc);else handleClick(rr,cc);}
+      },{passive:false});
+      el.addEventListener('touchmove',e=>{clearTimeout(pressTimer);el.classList.remove('pressing');didLongPress=true;},{passive:false});
       grid.appendChild(el);
     }
   }
 
+  // ─── INIT ─────────────────────────────────────────────────────────
+  // Show name modal on first load, skip cancel button
   resetGame();
+  openNameModal(false);
 </script>
 </body>
 </html>
