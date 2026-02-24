@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>chest gui with minesweeper</title>
+<link rel="icon" type="image/png" href="https://static.miraheze.org/btawiki/b/b8/Wooden_Chest.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: monospace;
+    padding: 20px;
+  }
+
+  .chest-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tabs {
+    display: flex;
+    align-self: flex-start;
+    gap: 0;
+    margin-left: 4px;
+  }
+
+  .tab {
+    background: #aaaaaa;
+    border-top: 3px solid #dddddd;
+    border-left: 3px solid #dddddd;
+    border-right: 3px solid #444;
+    border-bottom: none;
+    padding: 5px 14px 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    user-select: none;
+    margin-right: 2px;
+  }
+
+  .tab.active {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: none;
+    color: #222;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab:hover:not(.active) {
+    background: #bbbbbb;
+  }
+
+  .chest-container {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555555;
+    border-bottom: 3px solid #555555;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    color: #3f3f3f;
+    margin: 4px 2px 2px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+  }
+
+  /* ---- TOP CHEST GRID (selectable) ---- */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(9, 36px);
+    gap: 2px;
+  }
+
+  .slot {
+    width: 36px;
+    height: 36px;
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-left: 2px solid #373737;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+    color: #ffffff;
+    text-shadow: 1px 1px 0px #000000aa;
+    cursor: pointer;
+    transition: background 0.1s;
+    user-select: none;
+  }
+
+  .slot:hover { background: #9e9e9e; }
+
+  .slot.selected {
+    background: #5a8a5a;
+    border-top: 2px solid #2a5a2a;
+    border-left: 2px solid #2a5a2a;
+    border-right: 2px solid #90ee90;
+    border-bottom: 2px solid #90ee90;
+  }
+
+  .slot.selected:hover { background: #6a9a6a; }
+
+  .divider {
+    height: 4px;
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-bottom: 2px solid #ffffff;
+    margin: 4px 0;
+  }
+
+  /* ---- MINESWEEPER GRID (9x9) ---- */
+  .ms-grid {
+    display: grid;
+    grid-template-columns: repeat(9, 36px);
+    gap: 2px;
+  }
+
+  .ms-cell {
+    width: 36px;
+    height: 36px;
+    background: #8b8b8b;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #373737;
+    border-bottom: 2px solid #373737;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.05s;
+    font-family: monospace;
+  }
+
+  .ms-cell.hidden {
+    background: #8b8b8b;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #373737;
+    border-bottom: 2px solid #373737;
+    cursor: pointer;
+  }
+
+  .ms-cell.hidden:hover { background: #9e9e9e; }
+
+  .ms-cell.revealed {
+    background: #a0a0a0;
+    border: 1px solid #888;
+    cursor: default;
+  }
+
+  .ms-cell.flagged {
+    background: #1a6b9a;
+    border-top: 2px solid #4db8e8;
+    border-left: 2px solid #4db8e8;
+    border-right: 2px solid #0a3a5a;
+    border-bottom: 2px solid #0a3a5a;
+  }
+
+  .ms-cell.mine-hit {
+    background: #cc3333;
+    border: 2px solid #ff5555;
+  }
+
+  .ms-cell.mine-revealed {
+    background: #a0a0a0;
+    border: 1px solid #888;
+  }
+
+  /* Number colors */
+  .n1 { color: #1111cc; }
+  .n2 { color: #117711; }
+  .n3 { color: #cc1111; }
+  .n4 { color: #111177; }
+  .n5 { color: #771111; }
+  .n6 { color: #117777; }
+  .n7 { color: #111111; }
+  .n8 { color: #777777; }
+
+  /* HUD bar above minesweeper */
+  .ms-hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #c6c6c6;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+  }
+
+  .ms-counter {
+    background: #000;
+    color: #ff2222;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-top: 2px solid #555;
+    border-left: 2px solid #555;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    min-width: 40px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .ms-face-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: 3px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+  }
+
+  .ms-face-btn:active {
+    border-top: 3px solid #555;
+    border-left: 3px solid #555;
+    border-right: 3px solid #ffffff;
+    border-bottom: 3px solid #ffffff;
+  }
+
+  .selected-display {
+    margin-top: 12px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 7px 14px;
+    color: #aaffaa;
+    font-size: 11px;
+    max-width: 380px;
+    word-break: break-all;
+    text-align: center;
+  }
+
+  .clear-btn {
+    margin-top: 6px;
+    background: #3a3a3a;
+    color: #ccc;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 4px 14px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: monospace;
+  }
+  .clear-btn:hover { background: #555; color: #fff; }
+</style>
+</head>
+<body>
+
+<div class="chest-wrapper">
+  <div class="tabs">
+    <div class="tab active" id="tab-large" onclick="switchTab('large')">Large Chest</div>
+    <div class="tab" id="tab-small" onclick="switchTab('small')">Small Chest</div>
+    <div class="tab" id="tab-hopper" onclick="switchTab('hopper')">Hopper</div>
+  </div>
+  <div class="chest-container">
+
+    <!-- TOP CHEST: dynamic slots -->
+    <div class="section-label" id="chest-label">Large Chest</div>
+    <div class="grid" id="chest-grid"></div>
+
+    <div class="divider"></div>
+
+    <!-- MINESWEEPER HUD -->
+    <div class="ms-hud" style="width: 100%;">
+      <div class="ms-counter" id="mine-counter">12</div>
+      <div class="ms-face-btn" id="face-btn" onclick="resetGame()" title="New Game">(╹ڡ╹ )</div>
+      <div class="ms-counter" id="timer-display">000</div>
+    </div>
+
+    <!-- MINESWEEPER GRID -->
+    <div class="section-label">Inventory - Right click to flag</div>
+    <div class="ms-grid" id="ms-grid"></div>
+
+    <!-- HOTBAR (decorative) -->
+    <div style="height:4px"></div>
+    <div class="grid" id="hotbar-grid"></div>
+
+  </div>
+</div>
+
+<div class="selected-display" id="selected-label">Selected chest slots: none</div>
+<button class="clear-btn" onclick="clearChestSelection()">Clear Selection</button>
+
+<script>
+  // ─── CHEST SELECTION ───────────────────────────────────────────────
+  const chestSelected = new Set();
+
+  function updateChestLabel() {
+    const label = document.getElementById('selected-label');
+    if (chestSelected.size === 0) {
+      label.textContent = 'Selected chest slots: none | Total: 0';
+    } else {
+      const sorted = [...chestSelected].sort((a, b) => a - b);
+      label.textContent = 'Selected chest slots: ' + sorted.join(', ') + ' | Total: ' + sorted.length;
+    }
+  }
+
+  function clearChestSelection() {
+    chestSelected.clear();
+    document.querySelectorAll('#chest-grid .slot.selected').forEach(s => s.classList.remove('selected'));
+    updateChestLabel();
+  }
+
+  const CHEST_CONFIGS = {
+    large:  { slots: 54, cols: 9, label: 'Large Chest' },
+    small:  { slots: 27, cols: 9, label: 'Small Chest' },
+    hopper: { slots: 5,  cols: 5, label: 'Hopper' },
+  };
+  let currentTab = 'large';
+
+  function switchTab(type) {
+    currentTab = type;
+    chestSelected.clear();
+    updateChestLabel();
+    // Update tab active states
+    ['large', 'small', 'hopper'].forEach(t => {
+      document.getElementById('tab-' + t).classList.toggle('active', t === type);
+    });
+    buildChestGrid();
+  }
+
+  function buildChestGrid() {
+    const cfg = CHEST_CONFIGS[currentTab];
+    const chestGrid = document.getElementById('chest-grid');
+    chestGrid.innerHTML = '';
+    chestGrid.style.gridTemplateColumns = `repeat(${cfg.cols}, 36px)`;
+    chestGrid.style.justifyContent = currentTab === 'hopper' ? 'center' : 'start';
+    document.getElementById('chest-label').textContent = cfg.label;
+    for (let i = 0; i < cfg.slots; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.textContent = i;
+      slot.addEventListener('click', () => {
+        slot.classList.toggle('selected');
+        chestSelected.has(i) ? chestSelected.delete(i) : chestSelected.add(i);
+        updateChestLabel();
+      });
+      chestGrid.appendChild(slot);
+    }
+  }
+
+  buildChestGrid();
+
+  // Hotbar decorative
+  const hotbarGrid = document.getElementById('hotbar-grid');
+  for (let i = 0; i < 9; i++) {
+    const s = document.createElement('div');
+    s.className = 'slot';
+    s.style.cursor = 'default';
+    s.style.color = '#aaa';
+    s.textContent = '';
+    hotbarGrid.appendChild(s);
+  }
+
+  // ─── MINESWEEPER ───────────────────────────────────────────────────
+  const ROWS = 9, COLS = 9, TOTAL_MINES = 12;
+
+  let board = [];       // { mine, revealed, flagged, count }
+  let gameOver = false;
+  let gameWon = false;
+  let firstClick = true;
+  let flagCount = 0;
+  let timerVal = 0;
+  let timerInterval = null;
+
+  function resetGame() {
+    clearInterval(timerInterval);
+    timerVal = 0;
+    gameOver = false;
+    gameWon = false;
+    firstClick = true;
+    flagCount = 0;
+    document.getElementById('mine-counter').textContent = String(TOTAL_MINES).padStart(3, '0');
+    document.getElementById('timer-display').textContent = '000';
+    document.getElementById('face-btn').textContent = '(╹ڡ╹ )';
+    initBoard();
+    renderBoard();
+  }
+
+  function initBoard() {
+    board = [];
+    for (let r = 0; r < ROWS; r++) {
+      board[r] = [];
+      for (let c = 0; c < COLS; c++) {
+        board[r][c] = { mine: false, revealed: false, flagged: false, count: 0 };
+      }
+    }
+  }
+
+  function placeMines(safeR, safeC) {
+    // Safe zone: clicked cell + all neighbors guaranteed mine-free
+    const safeZone = new Set();
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = safeR + dr, nc = safeC + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS)
+          safeZone.add(nr * COLS + nc);
+      }
+    let placed = 0;
+    while (placed < TOTAL_MINES) {
+      const r = Math.floor(Math.random() * ROWS);
+      const c = Math.floor(Math.random() * COLS);
+      if (!board[r][c].mine && !safeZone.has(r * COLS + c)) {
+        board[r][c].mine = true;
+        placed++;
+      }
+    }
+    // Calculate counts
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        if (!board[r][c].mine) {
+          board[r][c].count = countNeighborMines(r, c);
+        }
+      }
+    }
+  }
+
+  function countNeighborMines(r, c) {
+    let count = 0;
+    for (let dr = -1; dr <= 1; dr++)
+      for (let dc = -1; dc <= 1; dc++) {
+        const nr = r + dr, nc = c + dc;
+        if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc].mine) count++;
+      }
+    return count;
+  }
+
+  function reveal(r, c) {
+    if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return;
+    const cell = board[r][c];
+    if (cell.revealed || cell.flagged) return;
+    cell.revealed = true;
+    if (cell.count === 0 && !cell.mine) {
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++)
+          reveal(r + dr, c + dc);
+    }
+  }
+
+  function checkWin() {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++)
+        if (!board[r][c].mine && !board[r][c].revealed) return false;
+    return true;
+  }
+
+  function handleClick(r, c) {
+    if (gameOver || gameWon) return;
+    const cell = board[r][c];
+    if (cell.revealed || cell.flagged) return;
+
+    if (firstClick) {
+      firstClick = false;
+      placeMines(r, c);
+      timerInterval = setInterval(() => {
+        timerVal = Math.min(timerVal + 1, 999);
+        document.getElementById('timer-display').textContent = String(timerVal).padStart(3, '0');
+      }, 1000);
+    }
+
+    if (cell.mine) {
+      cell.revealed = true;
+      gameOver = true;
+      clearInterval(timerInterval);
+      document.getElementById('face-btn').textContent = "(┬┬﹏┬┬)";
+      revealAllMines(r, c);
+      renderBoard();
+      return;
+    }
+
+    reveal(r, c);
+
+    if (checkWin()) {
+      gameWon = true;
+      clearInterval(timerInterval);
+      document.getElementById('face-btn').textContent = "~\\(≧▽≦)/~";
+      // Flag all remaining mines
+      for (let rr = 0; rr < ROWS; rr++)
+        for (let cc = 0; cc < COLS; cc++)
+          if (board[rr][cc].mine) board[rr][cc].flagged = true;
+      flagCount = TOTAL_MINES;
+      document.getElementById('mine-counter').textContent = '000';
+    }
+
+    renderBoard();
+  }
+
+  function handleRightClick(e, r, c) {
+    e.preventDefault();
+    if (gameOver || gameWon) return;
+    const cell = board[r][c];
+    if (cell.revealed) return;
+
+    if (!cell.flagged && flagCount >= TOTAL_MINES) return;
+
+    cell.flagged = !cell.flagged;
+    flagCount += cell.flagged ? 1 : -1;
+    const remaining = TOTAL_MINES - flagCount;
+    document.getElementById('mine-counter').textContent = String(Math.max(0, remaining)).padStart(3, '0');
+    renderBoard();
+  }
+
+  function revealAllMines(hitR, hitC) {
+    for (let r = 0; r < ROWS; r++)
+      for (let c = 0; c < COLS; c++) {
+        const cell = board[r][c];
+        if (cell.mine && !(r === hitR && c === hitC)) cell.revealed = true;
+        // Wrong flags
+        if (!cell.mine && cell.flagged) cell.wrongFlag = true;
+      }
+  }
+
+  const NUM_COLORS = ['', '#1111cc', '#117711', '#cc1111', '#111177', '#771111', '#117777', '#111111', '#777777'];
+
+  function renderBoard() {
+    const grid = document.getElementById('ms-grid');
+    grid.innerHTML = '';
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const cell = board[r][c];
+        const el = document.createElement('div');
+        el.className = 'ms-cell';
+
+        if (cell.revealed) {
+          if (cell.mine) {
+            el.classList.add(cell.wrongFlag ? 'mine-hit' : 'mine-hit');
+            el.textContent = '\u{1F4A3}';
+          } else {
+            el.classList.add('revealed');
+            if (cell.count > 0) {
+              el.textContent = cell.count;
+              el.style.color = NUM_COLORS[cell.count];
+            }
+          }
+        } else if (cell.flagged) {
+          el.classList.add('flagged');
+          el.textContent = '\u{1F6A9}';
+        } else if (cell.wrongFlag) {
+          el.classList.add('revealed');
+          el.textContent = '\u{274C}';
+        } else {
+          el.classList.add('hidden');
+        }
+
+        const rr = r, cc = c;
+        el.addEventListener('click', () => handleClick(rr, cc));
+        el.addEventListener('contextmenu', (e) => handleRightClick(e, rr, cc));
+        grid.appendChild(el);
+      }
+    }
+  }
+
+  // Init on load
+  resetGame();
+</script>
+
+</body>
+</html>
