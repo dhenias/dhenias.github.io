@@ -533,7 +533,7 @@
     <div class="lb-panel" id="lb-panel">
       <div class="lb-title">
         <span>🏆 Best Times (9×9 · 12 mines)</span>
-        <!-- <span class="lb-clear-btn" onclick="clearLeaderboard()">Reset</span> -->
+        <span class="lb-clear-btn" onclick="clearLeaderboard()">Reset</span>
       </div>
       <div id="lb-rows"></div>
     </div>
@@ -717,12 +717,16 @@
   }
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
-  const LS_PLAYER = 'ms-player-name';
-  const LB_KEY    = 'ms-leaderboard-v1';
+  // ─── GIST CONFIG — fill these in ─────────────────────────────────
+  const GIST_ID    = 'YOUR_GIST_ID';       // e.g. 'a1b2c3d4e5f6...'
+  const GIST_TOKEN = 'YOUR_GITHUB_TOKEN';  // e.g. 'github_pat_...'
+  const GIST_FILE  = 'leaderboard.json';
+  // ──────────────────────────────────────────────────────────────────
 
-  // Restore name from previous visit
+  const LS_PLAYER = 'ms-player-name';
   let currentPlayer = localStorage.getItem(LS_PLAYER) || null;
 
+  // ─── PLAYER MODAL ─────────────────────────────────────────────────
   function openNameModal() {
     const input     = document.getElementById('name-input');
     const cancelBtn = document.getElementById('name-cancel-btn');
@@ -748,7 +752,7 @@
     localStorage.setItem(LS_PLAYER, currentPlayer);
     document.getElementById('name-modal').style.display = 'none';
     updatePlayerBadge();
-    if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard();
+    if (document.getElementById('lb-panel').classList.contains('open')) loadAndRenderLeaderboard();
   }
 
   function updatePlayerBadge() {
@@ -761,26 +765,55 @@
     if (e.key === 'Escape') cancelNameModal();
   });
 
-  // ─── LEADERBOARD ──────────────────────────────────────────────────
-  function getEntries() {
-    try { return JSON.parse(localStorage.getItem(LB_KEY)) || []; }
-    catch(_) { return []; }
+  // ─── GIST LEADERBOARD ─────────────────────────────────────────────
+  const GIST_API = `https://api.github.com/gists/${GIST_ID}`;
+  const GIST_HEADERS = {
+    'Authorization': `Bearer ${GIST_TOKEN}`,
+    'Accept': 'application/vnd.github+json',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  // Fetch current entries from Gist
+  async function fetchEntries() {
+    const res = await fetch(GIST_API, { headers: GIST_HEADERS });
+    if (!res.ok) throw new Error('Gist fetch failed: ' + res.status);
+    const data = await res.json();
+    const content = data.files[GIST_FILE]?.content || '[]';
+    return JSON.parse(content);
   }
 
-  function saveEntries(entries) {
-    localStorage.setItem(LB_KEY, JSON.stringify(entries));
+  // Write updated entries back to Gist
+  async function pushEntries(entries) {
+    const res = await fetch(GIST_API, {
+      method: 'PATCH',
+      headers: { ...GIST_HEADERS, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        files: { [GIST_FILE]: { content: JSON.stringify(entries, null, 2) } }
+      })
+    });
+    if (!res.ok) throw new Error('Gist write failed: ' + res.status);
   }
 
   function toggleLeaderboard() {
     const panel = document.getElementById('lb-panel');
     panel.classList.toggle('open');
-    if (panel.classList.contains('open')) renderLeaderboard();
+    if (panel.classList.contains('open')) loadAndRenderLeaderboard();
     playTab();
   }
 
-  function renderLeaderboard() {
-    const rowsEl  = document.getElementById('lb-rows');
-    const entries = getEntries();
+  async function loadAndRenderLeaderboard() {
+    const rowsEl = document.getElementById('lb-rows');
+    rowsEl.innerHTML = '<div class="lb-empty" style="color:#888">Loading…</div>';
+    try {
+      const entries = await fetchEntries();
+      renderLeaderboard(entries);
+    } catch(e) {
+      rowsEl.innerHTML = '<div class="lb-empty" style="color:#c33">Failed to load. Check your Gist config.</div>';
+    }
+  }
+
+  function renderLeaderboard(entries) {
+    const rowsEl = document.getElementById('lb-rows');
     if (!entries.length) {
       rowsEl.innerHTML = '<div class="lb-empty">No scores yet — be the first to win!</div>';
       return;
@@ -799,17 +832,11 @@
     }).join('');
   }
 
-  function clearLeaderboard() {
-    if (!confirm('Reset the entire leaderboard?')) return;
-    localStorage.removeItem(LB_KEY);
-    renderLeaderboard();
-  }
-
   function esc(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  function submitScore(timeSeconds) {
+  async function submitScore(timeSeconds) {
     const flash = document.getElementById('win-flash');
 
     if (!currentPlayer) {
@@ -819,29 +846,36 @@
       return;
     }
 
-    const entries = getEntries();
-    const idx     = entries.findIndex(e => e.name === currentPlayer);
-    let isNewBest = false;
-
-    if (idx >= 0) {
-      isNewBest = timeSeconds < entries[idx].best;
-      entries[idx].wins += 1;
-      if (isNewBest) entries[idx].best = timeSeconds;
-    } else {
-      isNewBest = true;
-      entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
-    }
-
-    saveEntries(entries);
-
-    const saved = entries[idx >= 0 ? idx : entries.length - 1];
-    flash.textContent = isNewBest
-      ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
-      : `✓ ${currentPlayer}: ${timeSeconds}s saved (best: ${saved.best}s)`;
+    flash.textContent = `Saving score…`;
     flash.classList.add('show');
-    setTimeout(() => flash.classList.remove('show'), 4000);
 
-    if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard();
+    try {
+      const entries = await fetchEntries();
+      const idx     = entries.findIndex(e => e.name === currentPlayer);
+      let isNewBest = false;
+
+      if (idx >= 0) {
+        isNewBest = timeSeconds < entries[idx].best;
+        entries[idx].wins += 1;
+        if (isNewBest) entries[idx].best = timeSeconds;
+      } else {
+        isNewBest = true;
+        entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
+      }
+
+      await pushEntries(entries);
+
+      const saved = entries[idx >= 0 ? idx : entries.length - 1];
+      flash.textContent = isNewBest
+        ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
+        : `✓ ${currentPlayer}: ${timeSeconds}s saved (best: ${saved.best}s)`;
+      setTimeout(() => flash.classList.remove('show'), 4000);
+
+      if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard(entries);
+    } catch(e) {
+      flash.textContent = `Won in ${timeSeconds}s! (score save failed — check Gist config)`;
+      setTimeout(() => flash.classList.remove('show'), 5000);
+    }
   }
 
   // ─── CHEST ────────────────────────────────────────────────────────
