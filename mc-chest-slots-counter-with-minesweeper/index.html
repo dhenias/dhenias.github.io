@@ -430,8 +430,6 @@
     justify-content: center;
   }
 
-  .modal-overlay.open { display: flex; }
-
   .modal-box {
     background: #c6c6c6;
     border-top: 3px solid #ffffff;
@@ -580,7 +578,7 @@
     <input class="modal-input" id="name-input" maxlength="16" placeholder="Steve" autocomplete="off" spellcheck="false">
     <div class="modal-err" id="name-err"></div>
     <div class="modal-row">
-      <div class="modal-btn" id="name-cancel-btn" onclick="cancelNameModal()">Cancel</div>
+      <div class="modal-btn" id="name-cancel-btn" onclick="cancelNameModal()">Play as Guest</div>
       <div class="modal-btn primary" onclick="confirmName()">Save ✓</div>
     </div>
   </div>
@@ -601,7 +599,7 @@
 
     <!-- Player bar -->
     <div class="player-bar">
-      <div class="player-name-display" id="player-display" onclick="openNameModal()">👤 Guest</div>
+      <div class="player-name-display" id="player-display" onclick="openNameModal(!!currentPlayer)">👤 Guest</div>
       <div class="lb-toggle-btn" onclick="toggleLeaderboard()">🏆 Leaderboard</div>
     </div>
 
@@ -790,43 +788,48 @@
   }
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
-  let currentPlayer = null; // null = guest
-  let isEditingName = false; // true when changing name (vs first time)
+  let currentPlayer = null;
 
-  function openNameModal(editing = false) {
-    isEditingName = editing;
+  function openNameModal(editing) {
+    // editing = true when player already has a name and just wants to change it
+    const hasPlayer = !!currentPlayer;
+    const isEdit = editing !== undefined ? editing : hasPlayer;
     const modal = document.getElementById('name-modal');
     const input = document.getElementById('name-input');
     const cancelBtn = document.getElementById('name-cancel-btn');
-    const err = document.getElementById('name-err');
-    input.value = editing && currentPlayer ? currentPlayer : '';
-    err.textContent = '';
-    cancelBtn.style.display = editing ? '' : 'none';
-    modal.classList.add('open');
+    input.value = isEdit && currentPlayer ? currentPlayer : '';
+    document.getElementById('name-err').textContent = '';
+    // On first load: "Play as Guest". When editing: "Cancel"
+    cancelBtn.textContent = hasPlayer ? 'Cancel' : 'Play as Guest';
+    modal.style.display = 'flex';
     setTimeout(() => input.focus(), 80);
   }
 
   function cancelNameModal() {
-    document.getElementById('name-modal').classList.remove('open');
+    document.getElementById('name-modal').style.display = 'none';
+    // If cancelling as guest on first load, update badge
+    if (!currentPlayer) {
+      document.getElementById('player-display').textContent = '👤 Guest';
+    }
   }
 
   function confirmName() {
     const input = document.getElementById('name-input');
-    const err = document.getElementById('name-err');
+    const errEl = document.getElementById('name-err');
     const raw = input.value.trim();
-    if (!raw) { err.textContent = 'Please enter a name.'; return; }
-    if (raw.length < 2) { err.textContent = 'Name must be at least 2 characters.'; return; }
-    if (!/^[a-zA-Z0-9_\- ]+$/.test(raw)) { err.textContent = 'Letters, numbers, spaces, _ and - only.'; return; }
+    if (!raw) { errEl.textContent = 'Please enter a name.'; return; }
+    if (raw.length < 2) { errEl.textContent = 'At least 2 characters required.'; return; }
+    if (!/^[a-zA-Z0-9_\- ]+$/.test(raw)) { errEl.textContent = 'Letters, numbers, spaces, _ and - only.'; return; }
     currentPlayer = raw;
     document.getElementById('player-display').textContent = '👤 ' + currentPlayer;
-    document.getElementById('name-modal').classList.remove('open');
-    loadLeaderboard();
+    document.getElementById('name-modal').style.display = 'none';
+    // Refresh leaderboard highlighting if open
+    if (document.getElementById('lb-panel').classList.contains('open')) loadLeaderboard();
   }
 
-  // Allow Enter key in input
   document.getElementById('name-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') confirmName();
-    if (e.key === 'Escape') cancelNameModal();
+    if (e.key === 'Escape' && currentPlayer) cancelNameModal();
   });
 
   // ─── LEADERBOARD ──────────────────────────────────────────────────
@@ -834,50 +837,42 @@
 
   function toggleLeaderboard() {
     const panel = document.getElementById('lb-panel');
-    const isOpen = panel.classList.contains('open');
-    if (isOpen) {
-      panel.classList.remove('open');
-    } else {
-      panel.classList.add('open');
-      loadLeaderboard();
-    }
+    const willOpen = !panel.classList.contains('open');
+    panel.classList.toggle('open');
+    if (willOpen) loadLeaderboard();
     playTab();
+  }
+
+  async function getStoredEntries() {
+    try {
+      const result = await window.storage.get(LB_KEY, true);
+      if (result && result.value) return JSON.parse(result.value);
+    } catch(_) { /* key doesn't exist yet */ }
+    return [];
   }
 
   async function loadLeaderboard() {
     const rowsEl = document.getElementById('lb-rows');
     rowsEl.innerHTML = '<div class="lb-loading">Loading…</div>';
-    let entries = [];
-    try {
-      const result = await window.storage.get(LB_KEY, true);
-      if (result && result.value) {
-        entries = JSON.parse(result.value);
-      }
-    } catch(e) {
-      // No entries yet — that's fine
-    }
+    const entries = await getStoredEntries();
     renderLeaderboard(entries);
   }
 
   function renderLeaderboard(entries) {
     const rowsEl = document.getElementById('lb-rows');
     if (!entries || entries.length === 0) {
-      rowsEl.innerHTML = '<div class="lb-empty">No scores yet. Be the first to win!</div>';
+      rowsEl.innerHTML = '<div class="lb-empty">No scores yet — be the first to win!</div>';
       return;
     }
-    // Sort by best time (ascending), then by most wins
-    entries.sort((a, b) => a.best - b.best || b.wins - a.wins);
-    const top = entries.slice(0, 10);
-    const medals = ['gold','silver','bronze'];
-    rowsEl.innerHTML = top.map((e, i) => {
-      const rankClass = i < 3 ? medals[i] : '';
-      const rankSymbol = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i+1}.`;
+    const sorted = [...entries].sort((a, b) => a.best - b.best || b.wins - a.wins);
+    const medals = ['gold', 'silver', 'bronze'];
+    rowsEl.innerHTML = sorted.slice(0, 10).map((e, i) => {
+      const sym = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
       const isMe = currentPlayer && e.name === currentPlayer;
-      const timeStr = String(e.best).padStart(3,'0') + 's';
       return `<div class="lb-row">
-        <span class="lb-rank ${rankClass}">${rankSymbol}</span>
+        <span class="lb-rank ${medals[i] || ''}">${sym}</span>
         <span class="lb-pname ${isMe ? 'me' : ''}">${escHtml(e.name)}${isMe ? ' ★' : ''}</span>
-        <span class="lb-time">${timeStr}</span>
+        <span class="lb-time">${String(e.best).padStart(3,'0')}s</span>
         <span class="lb-wins">${e.wins}W</span>
       </div>`;
     }).join('');
@@ -888,39 +883,47 @@
   }
 
   async function submitScore(timeSeconds) {
-    if (!currentPlayer) return; // guest — don't save
-    try {
-      let entries = [];
-      try {
-        const result = await window.storage.get(LB_KEY, true);
-        if (result && result.value) entries = JSON.parse(result.value);
-      } catch(e) {}
+    if (!currentPlayer) {
+      // Guest won — prompt them to save their score
+      const flash = document.getElementById('win-flash');
+      flash.innerHTML = `You won in ${timeSeconds}s! <span style="text-decoration:underline;cursor:pointer" onclick="openNameModal()">Set a name to save your score</span>`;
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 5000);
+      return;
+    }
 
+    try {
+      const entries = await getStoredEntries();
       const idx = entries.findIndex(e => e.name === currentPlayer);
+      let isNewBest = false;
+
       if (idx >= 0) {
+        isNewBest = timeSeconds < entries[idx].best;
         entries[idx].wins += 1;
-        if (timeSeconds < entries[idx].best) entries[idx].best = timeSeconds;
+        if (isNewBest) entries[idx].best = timeSeconds;
       } else {
+        isNewBest = true;
         entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
       }
 
       await window.storage.set(LB_KEY, JSON.stringify(entries), true);
 
-      // Show flash
       const flash = document.getElementById('win-flash');
-      const isNewBest = idx < 0 || timeSeconds <= entries[idx].best;
       flash.textContent = isNewBest
         ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
         : `✓ ${currentPlayer}: ${timeSeconds}s saved`;
       flash.classList.add('show');
       setTimeout(() => flash.classList.remove('show'), 3500);
 
-      // Refresh leaderboard if open
       if (document.getElementById('lb-panel').classList.contains('open')) {
         renderLeaderboard(entries);
       }
     } catch(e) {
-      console.warn('Score save failed', e);
+      console.warn('Score save failed:', e);
+      const flash = document.getElementById('win-flash');
+      flash.textContent = `You won in ${timeSeconds}s! (score save failed)`;
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 3500);
     }
   }
 
@@ -1114,8 +1117,8 @@
   }
 
   // ─── INIT ─────────────────────────────────────────────────────────
-  // Show name modal on first load, skip cancel button
   resetGame();
+  // Show name entry on first load
   openNameModal(false);
 </script>
 </body>
