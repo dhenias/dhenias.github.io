@@ -86,10 +86,7 @@
     font-weight: bold;
   }
 
-  .grid {
-    display: grid;
-    gap: 2px;
-  }
+  .grid { display: grid; gap: 2px; }
 
   .slot {
     width: var(--cell);
@@ -306,7 +303,6 @@
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
   }
-
   .player-name-display:hover { background: #8acc8a; }
 
   .lb-toggle-btn {
@@ -325,10 +321,8 @@
     -webkit-tap-highlight-color: transparent;
     white-space: nowrap;
   }
-
   .lb-toggle-btn:hover { background: #bbbbbb; }
 
-  /* Leaderboard panel */
   .lb-panel {
     background: #b0b0b0;
     border-top: 2px solid #ffffff;
@@ -341,7 +335,6 @@
     flex-direction: column;
     gap: 3px;
   }
-
   .lb-panel.open { display: flex; }
 
   .lb-title {
@@ -352,7 +345,21 @@
     border-bottom: 1px solid #999;
     padding-bottom: 3px;
     margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
   }
+
+  .lb-clear-btn {
+    font-size: 9px;
+    font-family: 'Segoe UI', sans-serif;
+    background: #888;
+    color: #eee;
+    border: 1px solid #555;
+    padding: 1px 6px;
+    cursor: pointer;
+  }
+  .lb-clear-btn:hover { background: #cc3333; color: #fff; }
 
   .lb-row {
     display: flex;
@@ -363,61 +370,20 @@
     padding: 2px 0;
     border-bottom: 1px solid #aaa;
   }
-
   .lb-row:last-child { border-bottom: none; }
 
-  .lb-rank {
-    min-width: 22px;
-    font-weight: bold;
-    color: #555;
-    text-align: right;
-  }
-
+  .lb-rank { min-width: 22px; font-weight: bold; color: #555; text-align: right; }
   .lb-rank.gold   { color: #b8860b; }
   .lb-rank.silver { color: #777; }
   .lb-rank.bronze { color: #8b4513; }
 
-  .lb-pname {
-    flex: 1;
-    font-weight: bold;
-    color: #111;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
+  .lb-pname { flex: 1; font-weight: bold; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .lb-pname.me { color: #1a5a1a; }
 
-  .lb-time {
-    color: #cc0000;
-    font-weight: bold;
-    min-width: 42px;
-    text-align: right;
-  }
+  .lb-time { color: #cc0000; font-weight: bold; min-width: 42px; text-align: right; }
+  .lb-wins { color: #555; min-width: 36px; text-align: right; font-size: 10px; }
 
-  .lb-wins {
-    color: #555;
-    min-width: 36px;
-    text-align: right;
-    font-size: 10px;
-  }
-
-  .lb-empty {
-    font-size: 11px;
-    color: #666;
-    font-family: 'Segoe UI', sans-serif;
-    font-style: italic;
-    text-align: center;
-    padding: 4px 0;
-  }
-
-  .lb-loading {
-    font-size: 11px;
-    color: #888;
-    font-family: 'Segoe UI', sans-serif;
-    text-align: center;
-    padding: 4px 0;
-  }
+  .lb-empty { font-size: 11px; color: #666; font-family: 'Segoe UI', sans-serif; font-style: italic; text-align: center; padding: 4px 0; }
 
   /* Name entry modal */
   .modal-overlay {
@@ -443,19 +409,8 @@
     gap: 10px;
   }
 
-  .modal-title {
-    font-size: 13px;
-    font-family: 'Segoe UI', sans-serif;
-    font-weight: bold;
-    color: #222;
-  }
-
-  .modal-subtitle {
-    font-size: 10px;
-    font-family: 'Segoe UI', sans-serif;
-    color: #555;
-    margin-top: -6px;
-  }
+  .modal-title    { font-size: 13px; font-family: 'Segoe UI', sans-serif; font-weight: bold; color: #222; }
+  .modal-subtitle { font-size: 10px; font-family: 'Segoe UI', sans-serif; color: #555; margin-top: -6px; }
 
   .modal-input {
     background: #8b8b8b;
@@ -471,14 +426,8 @@
     outline: none;
     width: 100%;
   }
-
   .modal-input::placeholder { color: #bbb; font-weight: normal; }
-
-  .modal-input:focus {
-    background: #9a9a9a;
-    border-top-color: #222;
-    border-left-color: #222;
-  }
+  .modal-input:focus { background: #9a9a9a; border-top-color: #222; border-left-color: #222; }
 
   .modal-row { display: flex; gap: 8px; justify-content: flex-end; }
 
@@ -497,33 +446,12 @@
     border-bottom: 3px solid #444;
     color: #333;
   }
-
   .modal-btn:hover { background: #bbbbbb; }
-
-  .modal-btn.primary {
-    background: #7ab87a;
-    border-top: 3px solid #aff5af;
-    border-left: 3px solid #aff5af;
-    border-right: 3px solid #2a5a2a;
-    border-bottom: 3px solid #2a5a2a;
-    color: #1a3d1a;
-  }
-
+  .modal-btn.primary { background: #7ab87a; border-top: 3px solid #aff5af; border-left: 3px solid #aff5af; border-right: 3px solid #2a5a2a; border-bottom: 3px solid #2a5a2a; color: #1a3d1a; }
   .modal-btn.primary:hover { background: #8acc8a; }
 
-  .modal-btn:active, .modal-btn.primary:active {
-    border-top-color: #444; border-left-color: #444;
-    border-right-color: #ddd; border-bottom-color: #ddd;
-  }
+  .modal-err { font-size: 10px; color: #cc2222; font-family: 'Segoe UI', sans-serif; min-height: 14px; }
 
-  .modal-err {
-    font-size: 10px;
-    color: #cc2222;
-    font-family: 'Segoe UI', sans-serif;
-    min-height: 14px;
-  }
-
-  /* Win overlay on the minesweeper area */
   .win-score-flash {
     text-align: center;
     font-family: 'Segoe UI', sans-serif;
@@ -535,10 +463,8 @@
     margin: 2px 0;
     display: none;
   }
-
   .win-score-flash.show { display: block; }
 
-  /* Selected display */
   .selected-display {
     margin-top: 12px;
     background: #111;
@@ -574,7 +500,7 @@
 <div class="modal-overlay" id="name-modal">
   <div class="modal-box">
     <div class="modal-title">⛏️ Enter your name</div>
-    <div class="modal-subtitle">Your wins will be saved to the shared leaderboard.</div>
+    <div class="modal-subtitle">Your scores are saved locally in this browser.</div>
     <input class="modal-input" id="name-input" maxlength="16" placeholder="Steve" autocomplete="off" spellcheck="false">
     <div class="modal-err" id="name-err"></div>
     <div class="modal-row">
@@ -599,14 +525,17 @@
 
     <!-- Player bar -->
     <div class="player-bar">
-      <div class="player-name-display" id="player-display" onclick="openNameModal(!!currentPlayer)">👤 Guest</div>
+      <div class="player-name-display" id="player-display" onclick="openNameModal()">👤 Guest</div>
       <div class="lb-toggle-btn" onclick="toggleLeaderboard()">🏆 Leaderboard</div>
     </div>
 
     <!-- Leaderboard panel -->
     <div class="lb-panel" id="lb-panel">
-      <div class="lb-title">🏆 Best Times (9×9 · 12 mines)</div>
-      <div id="lb-rows"><div class="lb-loading">Loading…</div></div>
+      <div class="lb-title">
+        <span>🏆 Best Times (9×9 · 12 mines)</span>
+        <span class="lb-clear-btn" onclick="clearLeaderboard()">Reset</span>
+      </div>
+      <div id="lb-rows"></div>
     </div>
 
     <!-- Win flash -->
@@ -788,143 +717,131 @@
   }
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
-  let currentPlayer = null;
+  const LS_PLAYER = 'ms-player-name';
+  const LB_KEY    = 'ms-leaderboard-v1';
 
-  function openNameModal(editing) {
-    // editing = true when player already has a name and just wants to change it
-    const hasPlayer = !!currentPlayer;
-    const isEdit = editing !== undefined ? editing : hasPlayer;
-    const modal = document.getElementById('name-modal');
-    const input = document.getElementById('name-input');
+  // Restore name from previous visit
+  let currentPlayer = localStorage.getItem(LS_PLAYER) || null;
+
+  function openNameModal() {
+    const input     = document.getElementById('name-input');
     const cancelBtn = document.getElementById('name-cancel-btn');
-    input.value = isEdit && currentPlayer ? currentPlayer : '';
+    input.value     = currentPlayer || '';
     document.getElementById('name-err').textContent = '';
-    // On first load: "Play as Guest". When editing: "Cancel"
-    cancelBtn.textContent = hasPlayer ? 'Cancel' : 'Play as Guest';
-    modal.style.display = 'flex';
+    cancelBtn.textContent = currentPlayer ? 'Cancel' : 'Play as Guest';
+    document.getElementById('name-modal').style.display = 'flex';
     setTimeout(() => input.focus(), 80);
   }
 
   function cancelNameModal() {
     document.getElementById('name-modal').style.display = 'none';
-    // If cancelling as guest on first load, update badge
-    if (!currentPlayer) {
-      document.getElementById('player-display').textContent = '👤 Guest';
-    }
+    updatePlayerBadge();
   }
 
   function confirmName() {
-    const input = document.getElementById('name-input');
+    const raw   = document.getElementById('name-input').value.trim();
     const errEl = document.getElementById('name-err');
-    const raw = input.value.trim();
-    if (!raw) { errEl.textContent = 'Please enter a name.'; return; }
+    if (!raw)           { errEl.textContent = 'Please enter a name.'; return; }
     if (raw.length < 2) { errEl.textContent = 'At least 2 characters required.'; return; }
     if (!/^[a-zA-Z0-9_\- ]+$/.test(raw)) { errEl.textContent = 'Letters, numbers, spaces, _ and - only.'; return; }
     currentPlayer = raw;
-    document.getElementById('player-display').textContent = '👤 ' + currentPlayer;
+    localStorage.setItem(LS_PLAYER, currentPlayer);
     document.getElementById('name-modal').style.display = 'none';
-    // Refresh leaderboard highlighting if open
-    if (document.getElementById('lb-panel').classList.contains('open')) loadLeaderboard();
+    updatePlayerBadge();
+    if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard();
+  }
+
+  function updatePlayerBadge() {
+    document.getElementById('player-display').textContent =
+      currentPlayer ? '👤 ' + currentPlayer : '👤 Guest';
   }
 
   document.getElementById('name-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') confirmName();
-    if (e.key === 'Escape' && currentPlayer) cancelNameModal();
+    if (e.key === 'Escape') cancelNameModal();
   });
 
   // ─── LEADERBOARD ──────────────────────────────────────────────────
-  const LB_KEY = 'ms-leaderboard-v1';
+  function getEntries() {
+    try { return JSON.parse(localStorage.getItem(LB_KEY)) || []; }
+    catch(_) { return []; }
+  }
+
+  function saveEntries(entries) {
+    localStorage.setItem(LB_KEY, JSON.stringify(entries));
+  }
 
   function toggleLeaderboard() {
     const panel = document.getElementById('lb-panel');
-    const willOpen = !panel.classList.contains('open');
     panel.classList.toggle('open');
-    if (willOpen) loadLeaderboard();
+    if (panel.classList.contains('open')) renderLeaderboard();
     playTab();
   }
 
-  async function getStoredEntries() {
-    try {
-      const result = await window.storage.get(LB_KEY, true);
-      if (result && result.value) return JSON.parse(result.value);
-    } catch(_) { /* key doesn't exist yet */ }
-    return [];
-  }
-
-  async function loadLeaderboard() {
-    const rowsEl = document.getElementById('lb-rows');
-    rowsEl.innerHTML = '<div class="lb-loading">Loading…</div>';
-    const entries = await getStoredEntries();
-    renderLeaderboard(entries);
-  }
-
-  function renderLeaderboard(entries) {
-    const rowsEl = document.getElementById('lb-rows');
-    if (!entries || entries.length === 0) {
+  function renderLeaderboard() {
+    const rowsEl  = document.getElementById('lb-rows');
+    const entries = getEntries();
+    if (!entries.length) {
       rowsEl.innerHTML = '<div class="lb-empty">No scores yet — be the first to win!</div>';
       return;
     }
     const sorted = [...entries].sort((a, b) => a.best - b.best || b.wins - a.wins);
     const medals = ['gold', 'silver', 'bronze'];
     rowsEl.innerHTML = sorted.slice(0, 10).map((e, i) => {
-      const sym = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i + 1) + '.';
+      const sym  = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)+'.';
       const isMe = currentPlayer && e.name === currentPlayer;
       return `<div class="lb-row">
-        <span class="lb-rank ${medals[i] || ''}">${sym}</span>
-        <span class="lb-pname ${isMe ? 'me' : ''}">${escHtml(e.name)}${isMe ? ' ★' : ''}</span>
+        <span class="lb-rank ${medals[i]||''}">${sym}</span>
+        <span class="lb-pname ${isMe?'me':''}">${esc(e.name)}${isMe?' ★':''}</span>
         <span class="lb-time">${String(e.best).padStart(3,'0')}s</span>
         <span class="lb-wins">${e.wins}W</span>
       </div>`;
     }).join('');
   }
 
-  function escHtml(s) {
+  function clearLeaderboard() {
+    if (!confirm('Reset the entire leaderboard?')) return;
+    localStorage.removeItem(LB_KEY);
+    renderLeaderboard();
+  }
+
+  function esc(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   }
 
-  async function submitScore(timeSeconds) {
+  function submitScore(timeSeconds) {
+    const flash = document.getElementById('win-flash');
+
     if (!currentPlayer) {
-      // Guest won — prompt them to save their score
-      const flash = document.getElementById('win-flash');
-      flash.innerHTML = `You won in ${timeSeconds}s! <span style="text-decoration:underline;cursor:pointer" onclick="openNameModal()">Set a name to save your score</span>`;
+      flash.innerHTML = `You won in ${timeSeconds}s! <u style="cursor:pointer" onclick="openNameModal()">Set a name to save score</u>`;
       flash.classList.add('show');
       setTimeout(() => flash.classList.remove('show'), 5000);
       return;
     }
 
-    try {
-      const entries = await getStoredEntries();
-      const idx = entries.findIndex(e => e.name === currentPlayer);
-      let isNewBest = false;
+    const entries = getEntries();
+    const idx     = entries.findIndex(e => e.name === currentPlayer);
+    let isNewBest = false;
 
-      if (idx >= 0) {
-        isNewBest = timeSeconds < entries[idx].best;
-        entries[idx].wins += 1;
-        if (isNewBest) entries[idx].best = timeSeconds;
-      } else {
-        isNewBest = true;
-        entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
-      }
-
-      await window.storage.set(LB_KEY, JSON.stringify(entries), true);
-
-      const flash = document.getElementById('win-flash');
-      flash.textContent = isNewBest
-        ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
-        : `✓ ${currentPlayer}: ${timeSeconds}s saved`;
-      flash.classList.add('show');
-      setTimeout(() => flash.classList.remove('show'), 3500);
-
-      if (document.getElementById('lb-panel').classList.contains('open')) {
-        renderLeaderboard(entries);
-      }
-    } catch(e) {
-      console.warn('Score save failed:', e);
-      const flash = document.getElementById('win-flash');
-      flash.textContent = `You won in ${timeSeconds}s! (score save failed)`;
-      flash.classList.add('show');
-      setTimeout(() => flash.classList.remove('show'), 3500);
+    if (idx >= 0) {
+      isNewBest = timeSeconds < entries[idx].best;
+      entries[idx].wins += 1;
+      if (isNewBest) entries[idx].best = timeSeconds;
+    } else {
+      isNewBest = true;
+      entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
     }
+
+    saveEntries(entries);
+
+    const saved = entries[idx >= 0 ? idx : entries.length - 1];
+    flash.textContent = isNewBest
+      ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
+      : `✓ ${currentPlayer}: ${timeSeconds}s saved (best: ${saved.best}s)`;
+    flash.classList.add('show');
+    setTimeout(() => flash.classList.remove('show'), 4000);
+
+    if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard();
   }
 
   // ─── CHEST ────────────────────────────────────────────────────────
@@ -957,7 +874,9 @@
     if (type === currentTab) return;
     playTab(); currentTab = type;
     chestSelected.clear(); updateChestLabel();
-    ['large','small','hopper'].forEach(t=>document.getElementById('tab-'+t).classList.toggle('active',t===type));
+    ['large','small','hopper'].forEach(t =>
+      document.getElementById('tab-'+t).classList.toggle('active', t===type)
+    );
     buildChestGrid();
   }
 
@@ -966,16 +885,16 @@
     const chestGrid = document.getElementById('chest-grid');
     chestGrid.innerHTML = '';
     chestGrid.style.gridTemplateColumns = `repeat(${cfg.cols}, var(--cell))`;
-    chestGrid.style.justifyContent = currentTab==='hopper'?'center':'start';
+    chestGrid.style.justifyContent = currentTab==='hopper' ? 'center' : 'start';
     document.getElementById('chest-label').textContent = cfg.label;
     for (let i=0; i<cfg.slots; i++) {
       const slot = document.createElement('div');
       slot.className = 'slot';
       slot.textContent = i;
-      slot.addEventListener('click', ()=>{
+      slot.addEventListener('click', () => {
         playClick();
         slot.classList.toggle('selected');
-        chestSelected.has(i)?chestSelected.delete(i):chestSelected.add(i);
+        chestSelected.has(i) ? chestSelected.delete(i) : chestSelected.add(i);
         updateChestLabel();
       });
       chestGrid.appendChild(slot);
@@ -987,7 +906,7 @@
   const hotbarGrid = document.getElementById('hotbar-grid');
   hotbarGrid.style.gridTemplateColumns = 'repeat(9, var(--cell))';
   for (let i=0; i<9; i++) {
-    const s=document.createElement('div'); s.className='slot'; s.style.cursor='default';
+    const s = document.createElement('div'); s.className='slot'; s.style.cursor='default';
     hotbarGrid.appendChild(s);
   }
 
@@ -997,10 +916,10 @@
       firstClick=true, flagCount=0, timerVal=0, timerInterval=null;
 
   function setTool(tool) {
-    flagMode=(tool==='flag');
-    const msGrid=document.getElementById('ms-grid');
-    document.getElementById('tool-dig').className  = 'tool-btn'+(flagMode?'':' active-dig');
-    document.getElementById('tool-flag').className = 'tool-btn'+(flagMode?' active-flag':'');
+    flagMode = (tool==='flag');
+    const msGrid = document.getElementById('ms-grid');
+    document.getElementById('tool-dig').className  = 'tool-btn' + (flagMode ? '' : ' active-dig');
+    document.getElementById('tool-flag').className = 'tool-btn' + (flagMode ? ' active-flag' : '');
     document.getElementById('tool-hint').textContent = flagMode
       ? 'tap to flag · right-click to dig'
       : 'tap to dig · hold/right-click to flag';
@@ -1011,115 +930,156 @@
   function resetGame() {
     clearInterval(timerInterval); playReset();
     timerVal=0; gameOver=false; gameWon=false; firstClick=true; flagCount=0;
-    document.getElementById('mine-counter').textContent=String(TOTAL_MINES).padStart(3,'0');
-    document.getElementById('timer-display').textContent='000';
-    document.getElementById('face-btn').textContent='(╹ڡ╹ )';
+    document.getElementById('mine-counter').textContent = String(TOTAL_MINES).padStart(3,'0');
+    document.getElementById('timer-display').textContent = '000';
+    document.getElementById('face-btn').textContent = '(╹ڡ╹ )';
     document.getElementById('win-flash').classList.remove('show');
     initBoard(); renderBoard();
   }
 
   function initBoard() {
-    board=[];
-    for(let r=0;r<ROWS;r++){board[r]=[];for(let c=0;c<COLS;c++)board[r][c]={mine:false,revealed:false,flagged:false,count:0};}
+    board = [];
+    for (let r=0;r<ROWS;r++) {
+      board[r] = [];
+      for (let c=0;c<COLS;c++) board[r][c] = {mine:false,revealed:false,flagged:false,count:0};
+    }
   }
 
   function placeMines(safeR,safeC) {
-    const safe=new Set();
-    for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=safeR+dr,nc=safeC+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS)safe.add(nr*COLS+nc);}
+    const safe = new Set();
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=safeR+dr, nc=safeC+dc;
+      if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS) safe.add(nr*COLS+nc);
+    }
     let placed=0;
-    while(placed<TOTAL_MINES){const r=Math.floor(Math.random()*ROWS),c=Math.floor(Math.random()*COLS);if(!board[r][c].mine&&!safe.has(r*COLS+c)){board[r][c].mine=true;placed++;}}
-    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!board[r][c].mine)board[r][c].count=countNeighborMines(r,c);
+    while (placed<TOTAL_MINES) {
+      const r=Math.floor(Math.random()*ROWS), c=Math.floor(Math.random()*COLS);
+      if (!board[r][c].mine && !safe.has(r*COLS+c)) { board[r][c].mine=true; placed++; }
+    }
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (!board[r][c].mine) board[r][c].count = countNeighborMines(r,c);
   }
 
   function countNeighborMines(r,c) {
-    let n=0;for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++){const nr=r+dr,nc=c+dc;if(nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc].mine)n++;}return n;
+    let n=0;
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=r+dr, nc=c+dc;
+      if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc].mine) n++;
+    }
+    return n;
   }
 
   function reveal(r,c) {
-    if(r<0||r>=ROWS||c<0||c>=COLS)return;const cell=board[r][c];
-    if(cell.revealed||cell.flagged)return;cell.revealed=true;
-    if(cell.count===0&&!cell.mine)for(let dr=-1;dr<=1;dr++)for(let dc=-1;dc<=1;dc++)reveal(r+dr,c+dc);
+    if (r<0||r>=ROWS||c<0||c>=COLS) return;
+    const cell=board[r][c];
+    if (cell.revealed||cell.flagged) return;
+    cell.revealed=true;
+    if (cell.count===0&&!cell.mine)
+      for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) reveal(r+dr,c+dc);
   }
 
   function checkWin() {
-    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++)if(!board[r][c].mine&&!board[r][c].revealed)return false;return true;
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (!board[r][c].mine&&!board[r][c].revealed) return false;
+    return true;
   }
 
   function handleClick(r,c) {
-    if(gameOver||gameWon)return;
-    const cell=board[r][c];if(cell.revealed||cell.flagged)return;
-    if(firstClick){
-      firstClick=false;placeMines(r,c);
-      timerInterval=setInterval(()=>{timerVal=Math.min(timerVal+1,999);document.getElementById('timer-display').textContent=String(timerVal).padStart(3,'0');},1000);
+    if (gameOver||gameWon) return;
+    const cell=board[r][c];
+    if (cell.revealed||cell.flagged) return;
+    if (firstClick) {
+      firstClick=false; placeMines(r,c);
+      timerInterval=setInterval(()=>{
+        timerVal=Math.min(timerVal+1,999);
+        document.getElementById('timer-display').textContent=String(timerVal).padStart(3,'0');
+      },1000);
     }
-    if(cell.mine){
-      cell.revealed=true;gameOver=true;clearInterval(timerInterval);
-      playDeath();document.getElementById('face-btn').textContent="(┬┬﹏┬┬)";
-      revealAllMines(r,c);renderBoard();return;
+    if (cell.mine) {
+      cell.revealed=true; gameOver=true; clearInterval(timerInterval);
+      playDeath(); document.getElementById('face-btn').textContent="(┬┬﹏┬┬)";
+      revealAllMines(r,c); renderBoard(); return;
     }
-    reveal(r,c);playDig();
-    if(checkWin()){
-      gameWon=true;clearInterval(timerInterval);playWin();
+    reveal(r,c); playDig();
+    if (checkWin()) {
+      gameWon=true; clearInterval(timerInterval); playWin();
       document.getElementById('face-btn').textContent="~\\(≧▽≦)/~";
-      for(let rr=0;rr<ROWS;rr++)for(let cc=0;cc<COLS;cc++)if(board[rr][cc].mine)board[rr][cc].flagged=true;
-      flagCount=TOTAL_MINES;document.getElementById('mine-counter').textContent='000';
-      submitScore(timerVal); // 🏆 save score
+      for (let rr=0;rr<ROWS;rr++) for (let cc=0;cc<COLS;cc++)
+        if (board[rr][cc].mine) board[rr][cc].flagged=true;
+      flagCount=TOTAL_MINES;
+      document.getElementById('mine-counter').textContent='000';
+      submitScore(timerVal);
     }
     renderBoard();
   }
 
   function handleFlag(r,c) {
-    if(gameOver||gameWon)return;const cell=board[r][c];if(cell.revealed)return;
-    if(!cell.flagged&&flagCount>=TOTAL_MINES)return;
-    cell.flagged=!cell.flagged;flagCount+=cell.flagged?1:-1;playFlag(cell.flagged);
+    if (gameOver||gameWon) return;
+    const cell=board[r][c];
+    if (cell.revealed) return;
+    if (!cell.flagged&&flagCount>=TOTAL_MINES) return;
+    cell.flagged=!cell.flagged; flagCount+=cell.flagged?1:-1;
+    playFlag(cell.flagged);
     document.getElementById('mine-counter').textContent=String(Math.max(0,TOTAL_MINES-flagCount)).padStart(3,'0');
     renderBoard();
   }
 
   function revealAllMines(hitR,hitC) {
-    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
       const cell=board[r][c];
-      if(cell.mine&&!(r===hitR&&c===hitC))cell.revealed=true;
-      if(!cell.mine&&cell.flagged)cell.wrongFlag=true;
+      if (cell.mine&&!(r===hitR&&c===hitC)) cell.revealed=true;
+      if (!cell.mine&&cell.flagged) cell.wrongFlag=true;
     }
   }
 
   const NUM_COLORS=['','#1111cc','#117711','#cc1111','#111177','#771111','#117777','#111111','#777777'];
 
   function renderBoard() {
-    const grid=document.getElementById('ms-grid');grid.innerHTML='';
-    for(let r=0;r<ROWS;r++)for(let c=0;c<COLS;c++){
-      const cell=board[r][c],el=document.createElement('div');el.className='ms-cell';
-      if(cell.revealed){
-        if(cell.mine){el.classList.add('mine-hit');el.textContent='💣';}
-        else{el.classList.add('revealed');if(cell.count>0){el.textContent=cell.count;el.style.color=NUM_COLORS[cell.count];}}
-      }else if(cell.flagged){el.classList.add('flagged');el.textContent='🚩';}
-      else if(cell.wrongFlag){el.classList.add('revealed');el.textContent='❌';}
-      else{el.classList.add('hidden');}
-      const rr=r,cc=c;
-      el.addEventListener('click',()=>{if(flagMode)handleFlag(rr,cc);else handleClick(rr,cc);});
-      el.addEventListener('contextmenu',e=>{e.preventDefault();if(flagMode)handleClick(rr,cc);else handleFlag(rr,cc);});
-      let pressTimer=null,didLongPress=false;
-      el.addEventListener('touchstart',e=>{
+    const grid=document.getElementById('ms-grid'); grid.innerHTML='';
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+      const cell=board[r][c], el=document.createElement('div'); el.className='ms-cell';
+      if (cell.revealed) {
+        if (cell.mine) { el.classList.add('mine-hit'); el.textContent='💣'; }
+        else { el.classList.add('revealed'); if(cell.count>0){el.textContent=cell.count; el.style.color=NUM_COLORS[cell.count];} }
+      } else if (cell.flagged) {
+        el.classList.add('flagged'); el.textContent='🚩';
+      } else if (cell.wrongFlag) {
+        el.classList.add('revealed'); el.textContent='❌';
+      } else {
+        el.classList.add('hidden');
+      }
+
+      const rr=r, cc=c;
+      el.addEventListener('click', () => { if(flagMode) handleFlag(rr,cc); else handleClick(rr,cc); });
+      el.addEventListener('contextmenu', e => { e.preventDefault(); if(flagMode) handleClick(rr,cc); else handleFlag(rr,cc); });
+
+      let pressTimer=null, didLongPress=false;
+      el.addEventListener('touchstart', e => {
         e.preventDefault();
-        if(audioCtx&&audioCtx.state==='suspended')audioCtx.resume();
+        if (audioCtx&&audioCtx.state==='suspended') audioCtx.resume();
         didLongPress=false;
-        if(!cell.revealed)el.classList.add('pressing');
-        pressTimer=setTimeout(()=>{didLongPress=true;el.classList.remove('pressing');if(flagMode)handleClick(rr,cc);else handleFlag(rr,cc);},LONG_PRESS_MS);
-      },{passive:false});
-      el.addEventListener('touchend',e=>{
-        e.preventDefault();clearTimeout(pressTimer);el.classList.remove('pressing');
-        if(!didLongPress){if(flagMode)handleFlag(rr,cc);else handleClick(rr,cc);}
-      },{passive:false});
-      el.addEventListener('touchmove',e=>{clearTimeout(pressTimer);el.classList.remove('pressing');didLongPress=true;},{passive:false});
+        if (!cell.revealed) el.classList.add('pressing');
+        pressTimer=setTimeout(()=>{
+          didLongPress=true; el.classList.remove('pressing');
+          if (flagMode) handleClick(rr,cc); else handleFlag(rr,cc);
+        }, LONG_PRESS_MS);
+      }, {passive:false});
+      el.addEventListener('touchend', e => {
+        e.preventDefault(); clearTimeout(pressTimer); el.classList.remove('pressing');
+        if (!didLongPress) { if(flagMode) handleFlag(rr,cc); else handleClick(rr,cc); }
+      }, {passive:false});
+      el.addEventListener('touchmove', e => {
+        clearTimeout(pressTimer); el.classList.remove('pressing'); didLongPress=true;
+      }, {passive:false});
+
       grid.appendChild(el);
     }
   }
 
   // ─── INIT ─────────────────────────────────────────────────────────
+  updatePlayerBadge();
   resetGame();
-  // Show name entry on first load
-  openNameModal(false);
+  if (!currentPlayer) openNameModal(); // prompt on first ever visit
 </script>
 </body>
 </html>
