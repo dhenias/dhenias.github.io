@@ -781,7 +781,8 @@
       throw new Error('HTTP ' + res.status + ': ' + body.slice(0, 200));
     }
     const data = await res.json();
-    return Array.isArray(data.record) ? data.record : [];
+    const raw = Array.isArray(data.record) ? data.record : [];
+    return raw.filter(e => e && typeof e.name === 'string');
   }
 
   // Write updated entries back to JSONBin
