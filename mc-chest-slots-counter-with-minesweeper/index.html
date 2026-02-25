@@ -717,10 +717,9 @@
   }
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
-  // ─── GIST CONFIG — fill these in ─────────────────────────────────
-  const GIST_ID    = '990d1d6c1d099ce327734a450e7ee8cb';       // e.g. 'a1b2c3d4e5f6...'
-  const GIST_TOKEN = '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';  // e.g. 'github_pat_...'
-  const GIST_FILE  = 'leaderboard.json';
+  // ─── JSONBIN CONFIG — fill these in ──────────────────────────────
+  const JSONBIN_BIN_ID  = 'YOUR_BIN_ID';   // e.g. '664abc123...'
+  const JSONBIN_API_KEY = 'YOUR_API_KEY';  // e.g. '$2a$10$...'
   // ──────────────────────────────────────────────────────────────────
 
   const LS_PLAYER = 'ms-player-name';
@@ -765,44 +764,37 @@
     if (e.key === 'Escape') cancelNameModal();
   });
 
-  // ─── GIST LEADERBOARD ─────────────────────────────────────────────
-  const GIST_API = `https://api.github.com/gists/${GIST_ID}`;
-  const GIST_HEADERS = {
-    'Authorization': `Bearer ${GIST_TOKEN}`,
-    'Accept': 'application/vnd.github+json',
-    'X-GitHub-Api-Version': '2022-11-28'
-  };
+  // ─── JSONBIN LEADERBOARD ──────────────────────────────────────────
+  const JSONBIN_URL     = `https://api.jsonbin.io/v3/b/${699f77d7d0ea881f40d9a2a9}`;
+  const JSONBIN_HEADERS = { 'X-Master-Key': $2a$10$TjfOg5vD6Ufz1ZGhS..0T..O8guwm6rtJwC/rno9QDnRrSH5EX0He, 'Content-Type': 'application/json' };
 
-  // Fetch current entries from Gist
+  // Fetch current entries from JSONBin
   async function fetchEntries() {
     let res;
     try {
-      res = await fetch(GIST_API, { headers: GIST_HEADERS });
+      res = await fetch(JSONBIN_URL + '/latest', { headers: JSONBIN_HEADERS });
     } catch(netErr) {
-      throw new Error('Network/CORS error: ' + netErr.message);
+      throw new Error('Network error: ' + netErr.message);
     }
     if (!res.ok) {
-      let body = '';
-      try { body = await res.text(); } catch(_) {}
+      let body = ''; try { body = await res.text(); } catch(_) {}
       throw new Error('HTTP ' + res.status + ': ' + body.slice(0, 200));
     }
     const data = await res.json();
-    if (!data.files) throw new Error('No files in Gist response');
-    const file = data.files[GIST_FILE];
-    if (!file) throw new Error('File "' + GIST_FILE + '" not found. Gist has: ' + Object.keys(data.files).join(', '));
-    return JSON.parse(file.content || '[]');
+    return Array.isArray(data.record) ? data.record : [];
   }
 
-  // Write updated entries back to Gist
+  // Write updated entries back to JSONBin
   async function pushEntries(entries) {
-    const res = await fetch(GIST_API, {
-      method: 'PATCH',
-      headers: { ...GIST_HEADERS, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        files: { [GIST_FILE]: { content: JSON.stringify(entries, null, 2) } }
-      })
+    const res = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: JSONBIN_HEADERS,
+      body: JSON.stringify(entries)
     });
-    if (!res.ok) throw new Error('Gist write failed: ' + res.status);
+    if (!res.ok) {
+      let body = ''; try { body = await res.text(); } catch(_) {}
+      throw new Error('HTTP ' + res.status + ': ' + body.slice(0, 200));
+    }
   }
 
   function toggleLeaderboard() {
