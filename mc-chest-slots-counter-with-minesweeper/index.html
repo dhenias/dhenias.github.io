@@ -718,8 +718,8 @@
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
   // ─── JSONBIN CONFIG — fill these in ──────────────────────────────
-  const JSONBIN_BIN_ID  = 'YOUR_BIN_ID';   // e.g. '664abc123...'
-  const JSONBIN_API_KEY = 'YOUR_API_KEY';  // e.g. '$2a$10$...'
+  const JSONBIN_BIN_ID  = '699f77d7d0ea881f40d9a2a9';   // e.g. '664abc123...'
+  const JSONBIN_API_KEY = '$2a$10$TjfOg5vD6Ufz1ZGhS..0T..O8guwm6rtJwC/rno9QDnRrSH5EX0He';  // e.g. '$2a$10$...'
   // ──────────────────────────────────────────────────────────────────
 
   const LS_PLAYER = 'ms-player-name';
@@ -765,8 +765,8 @@
   });
 
   // ─── JSONBIN LEADERBOARD ──────────────────────────────────────────
-  const JSONBIN_URL     = `https://api.jsonbin.io/v3/b/${699f77d7d0ea881f40d9a2a9}`;
-  const JSONBIN_HEADERS = { 'X-Master-Key': $2a$10$TjfOg5vD6Ufz1ZGhS..0T..O8guwm6rtJwC/rno9QDnRrSH5EX0He, 'Content-Type': 'application/json' };
+  const JSONBIN_URL     = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+  const JSONBIN_HEADERS = { 'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json' };
 
   // Fetch current entries from JSONBin
   async function fetchEntries() {
