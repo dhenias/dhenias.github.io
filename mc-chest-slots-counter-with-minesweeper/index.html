@@ -101,8 +101,8 @@
     justify-content: center;
     font-size: 10px;
     font-weight: bold;
-    color: #ffffff;
-    text-shadow: 1px 1px 0px #000000aa;
+    color: rgba(255,255,255,0.25);
+    text-shadow: none;
     cursor: pointer;
     transition: background 0.1s;
     user-select: none;
@@ -117,6 +117,8 @@
     border-left: 2px solid #2a5a2a;
     border-right: 2px solid #90ee90;
     border-bottom: 2px solid #90ee90;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 1px 1px 0px #000000aa;
   }
 
   .slot.selected:hover { background: #6a9a6a; }
@@ -512,13 +514,13 @@
 
 <div class="chest-wrapper">
   <div class="tabs">
-    <div class="tab active" id="tab-large" onclick="switchTab('large')">Large Chest</div>
+    <div class="tab" id="tab-large" onclick="switchTab('large')">Large Chest</div>
     <div class="tab" id="tab-small"  onclick="switchTab('small')">Small Chest</div>
-    <div class="tab" id="tab-hopper" onclick="switchTab('hopper')">Hopper</div>
+    <div class="tab active" id="tab-hopper" onclick="switchTab('hopper')">Hopper</div>
   </div>
   <div class="chest-container">
 
-    <div class="section-label" id="chest-label">Large Chest</div>
+    <div class="section-label" id="chest-label">Hopper</div>
     <div class="grid" id="chest-grid"></div>
 
     <div class="divider"></div>
@@ -718,8 +720,8 @@
 
   // ─── PLAYER REGISTRATION ──────────────────────────────────────────
   // ─── JSONBIN CONFIG — fill these in ──────────────────────────────
-  const JSONBIN_BIN_ID  = '699f77d7d0ea881f40d9a2a9';   // e.g. '664abc123...'
-  const JSONBIN_API_KEY = '$2a$10$TjfOg5vD6Ufz1ZGhS..0T..O8guwm6rtJwC/rno9QDnRrSH5EX0He';  // e.g. '$2a$10$...'
+  const JSONBIN_BIN_ID  = 'YOUR_BIN_ID';   // e.g. '664abc123...'
+  const JSONBIN_API_KEY = 'YOUR_API_KEY';  // e.g. '$2a$10$...'
   // ──────────────────────────────────────────────────────────────────
 
   const LS_PLAYER = 'ms-player-name';
@@ -906,7 +908,7 @@
     small:  { slots: 27, cols: 9, label: 'Small Chest' },
     hopper: { slots: 5,  cols: 5, label: 'Hopper' },
   };
-  let currentTab = 'large';
+  let currentTab = 'hopper';
 
   function switchTab(type) {
     if (type === currentTab) return;
