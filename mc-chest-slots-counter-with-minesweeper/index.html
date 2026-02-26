@@ -502,7 +502,7 @@
 <div class="modal-overlay" id="name-modal">
   <div class="modal-box">
     <div class="modal-title">⛏️ Enter your name</div>
-    <div class="modal-subtitle">Your scores are saved locally in this browser.</div>
+    <div class="modal-subtitle">Your scores will be shown globally.</div>
     <input class="modal-input" id="name-input" maxlength="16" placeholder="Steve" autocomplete="off" spellcheck="false">
     <div class="modal-err" id="name-err"></div>
     <div class="modal-row">
@@ -534,7 +534,7 @@
     <!-- Leaderboard panel -->
     <div class="lb-panel" id="lb-panel">
       <div class="lb-title">
-        <span>🏆 Best Times (9×9 · 12 mines)</span>
+        <span>🏆 Best Times (9×9 · 10 mines)</span>
         <span class="lb-clear-btn" onclick="clearLeaderboard()">Reset</span>
       </div>
       <div id="lb-rows"></div>
@@ -545,7 +545,7 @@
 
     <!-- HUD -->
     <div class="ms-hud" style="width:100%">
-      <div class="ms-counter" id="mine-counter">12</div>
+      <div class="ms-counter" id="mine-counter">10</div>
       <div class="ms-face-btn" id="face-btn" onclick="resetGame()" title="New Game">(╹ڡ╹ )</div>
       <div class="ms-counter" id="timer-display">000</div>
     </div>
@@ -951,7 +951,7 @@
   }
 
   // ─── MINESWEEPER ──────────────────────────────────────────────────
-  const ROWS=9, COLS=9, TOTAL_MINES=12, LONG_PRESS_MS=500;
+  const ROWS=9, COLS=9, TOTAL_MINES=10, LONG_PRESS_MS=500;
   let flagMode=false, board=[], gameOver=false, gameWon=false,
       firstClick=true, flagCount=0, timerVal=0, timerInterval=null;
 
