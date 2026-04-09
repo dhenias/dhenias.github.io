@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>chest slots counter with minesweeper</title>
+<link rel="icon" type="image/png" href="https://static.miraheze.org/btawiki/b/b8/Wooden_Chest.png">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: #1a1a1a;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: monospace;
+    padding: 12px;
+    touch-action: manipulation;
+  }
+
+  .chest-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .tabs {
+    display: flex;
+    align-self: flex-start;
+    gap: 0;
+    margin-left: 4px;
+  }
+
+  .tab {
+    background: #aaaaaa;
+    border-top: 3px solid #dddddd;
+    border-left: 3px solid #dddddd;
+    border-right: 3px solid #444;
+    border-bottom: none;
+    padding: 5px 14px 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    font-family: 'Segoe UI', sans-serif;
+    user-select: none;
+    margin-right: 2px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .tab.active {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: none;
+    color: #222;
+    position: relative;
+    z-index: 1;
+  }
+
+  .tab:hover:not(.active) { background: #bbbbbb; }
+
+  .chest-container {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555555;
+    border-bottom: 3px solid #555555;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 100%;
+  }
+
+  .section-label {
+    font-size: 11px;
+    color: #3f3f3f;
+    margin: 4px 2px 2px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+  }
+
+  .grid { display: grid; gap: 2px; }
+
+  .slot {
+    width: var(--cell);
+    height: var(--cell);
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-left: 2px solid #373737;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.25);
+    text-shadow: none;
+    cursor: pointer;
+    transition: background 0.1s;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .slot:hover { background: #9e9e9e; }
+
+  .slot.selected {
+    background: #5a8a5a;
+    border-top: 2px solid #2a5a2a;
+    border-left: 2px solid #2a5a2a;
+    border-right: 2px solid #90ee90;
+    border-bottom: 2px solid #90ee90;
+    color: rgba(255,255,255,0.9);
+    text-shadow: 1px 1px 0px #000000aa;
+  }
+
+  .slot.selected:hover { background: #6a9a6a; }
+
+  .divider {
+    height: 4px;
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-bottom: 2px solid #ffffff;
+    margin: 4px 0;
+  }
+
+  /* ---- MINESWEEPER ---- */
+  .ms-grid {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell));
+    gap: 2px;
+    touch-action: none;
+  }
+
+  .ms-cell {
+    width: var(--cell);
+    height: var(--cell);
+    background: #8b8b8b;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #373737;
+    border-bottom: 2px solid #373737;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(12px, 3.5vw, 17px);
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background 0.05s;
+    font-family: monospace;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ms-cell.hidden { cursor: pointer; }
+  .ms-cell.hidden:hover { background: #9e9e9e; }
+
+  .ms-cell.pressing::after {
+    content: '';
+    position: absolute;
+    inset: 2px;
+    border-radius: 50%;
+    border: 3px solid #4db8e8;
+    animation: presscharge 0.5s linear forwards;
+    pointer-events: none;
+  }
+  .ms-grid.flag-mode .ms-cell.pressing::after { border-color: #7ab87a; }
+
+  @keyframes presscharge {
+    0%   { opacity: 0.3; transform: scale(0.5); }
+    100% { opacity: 1;   transform: scale(1); }
+  }
+
+  .ms-cell.revealed { background: #a0a0a0; border: 1px solid #888; cursor: default; }
+  .ms-cell.flagged  { background: #1a6b9a; border-top: 2px solid #4db8e8; border-left: 2px solid #4db8e8; border-right: 2px solid #0a3a5a; border-bottom: 2px solid #0a3a5a; }
+  .ms-cell.mine-hit { background: #cc3333; border: 2px solid #ff5555; }
+
+  .n1{color:#1111cc}.n2{color:#117711}.n3{color:#cc1111}
+  .n4{color:#111177}.n5{color:#771111}.n6{color:#117777}
+  .n7{color:#111111}.n8{color:#777777}
+
+  .ms-hud {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #c6c6c6;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    padding: 4px 8px;
+    margin-bottom: 2px;
+  }
+
+  .ms-counter {
+    background: #000;
+    color: #ff2222;
+    font-family: 'Courier New', monospace;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-top: 2px solid #555;
+    border-left: 2px solid #555;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    min-width: 40px;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  .ms-face-btn {
+    min-width: 32px;
+    height: 32px;
+    padding: 0 6px;
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: 3px solid #555;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .ms-face-btn:active {
+    border-top: 3px solid #555;
+    border-left: 3px solid #555;
+    border-right: 3px solid #ffffff;
+    border-bottom: 3px solid #ffffff;
+  }
+
+  /* ---- TOOL SWITCHER ---- */
+  .tool-switcher {
+    display: flex;
+    gap: 4px;
+    margin: 5px 2px 3px;
+    align-items: center;
+  }
+
+  .tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background: #aaaaaa;
+    border-top: 3px solid #dddddd;
+    border-left: 3px solid #dddddd;
+    border-right: 3px solid #444444;
+    border-bottom: 3px solid #444444;
+    color: #444;
+    white-space: nowrap;
+  }
+
+  .tool-btn.active-dig  { background:#7ab87a; border-top:3px solid #333; border-left:3px solid #333; border-right:3px solid #aff5af; border-bottom:3px solid #aff5af; color:#1a3d1a; }
+  .tool-btn.active-flag { background:#1a6b9a; border-top:3px solid #333; border-left:3px solid #333; border-right:3px solid #4db8e8; border-bottom:3px solid #4db8e8; color:#d0f0ff; }
+  .tool-btn:not(.active-dig):not(.active-flag):hover { background: #bbbbbb; }
+
+  .ms-grid.flag-mode .ms-cell.hidden       { background: #7a9ab0; }
+  .ms-grid.flag-mode .ms-cell.hidden:hover { background: #8ab0c8; }
+
+  .tool-label { font-size: 10px; color: #555; font-family: 'Segoe UI', sans-serif; }
+
+  /* ---- PLAYER / LEADERBOARD ---- */
+  .player-bar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px 2px 2px;
+    flex-wrap: wrap;
+  }
+
+  .player-name-display {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #1a3d1a;
+    background: #7ab87a;
+    border-top: 2px solid #333;
+    border-left: 2px solid #333;
+    border-right: 2px solid #aff5af;
+    border-bottom: 2px solid #aff5af;
+    padding: 3px 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .player-name-display:hover { background: #8acc8a; }
+
+  .lb-toggle-btn {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    background: #aaaaaa;
+    border-top: 2px solid #dddddd;
+    border-left: 2px solid #dddddd;
+    border-right: 2px solid #444;
+    border-bottom: 2px solid #444;
+    color: #333;
+    padding: 3px 8px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .lb-toggle-btn:hover { background: #bbbbbb; }
+
+  .lb-panel {
+    background: #b0b0b0;
+    border-top: 2px solid #ffffff;
+    border-left: 2px solid #ffffff;
+    border-right: 2px solid #555;
+    border-bottom: 2px solid #555;
+    padding: 6px 8px;
+    margin: 2px 0;
+    display: none;
+    flex-direction: column;
+    gap: 3px;
+  }
+  .lb-panel.open { display: flex; }
+
+  .lb-title {
+    font-size: 11px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    color: #222;
+    border-bottom: 1px solid #999;
+    padding-bottom: 3px;
+    margin-bottom: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .lb-clear-btn {
+    font-size: 9px;
+    font-family: 'Segoe UI', sans-serif;
+    background: #888;
+    color: #eee;
+    border: 1px solid #555;
+    padding: 1px 6px;
+    cursor: pointer;
+  }
+  .lb-clear-btn:hover { background: #cc3333; color: #fff; }
+
+  .lb-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-family: 'Courier New', monospace;
+    padding: 2px 0;
+    border-bottom: 1px solid #aaa;
+  }
+  .lb-row:last-child { border-bottom: none; }
+
+  .lb-rank { min-width: 22px; font-weight: bold; color: #555; text-align: right; }
+  .lb-rank.gold   { color: #b8860b; }
+  .lb-rank.silver { color: #777; }
+  .lb-rank.bronze { color: #8b4513; }
+
+  .lb-pname { flex: 1; font-weight: bold; color: #111; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .lb-pname.me { color: #1a5a1a; }
+
+  .lb-time { color: #cc0000; font-weight: bold; min-width: 42px; text-align: right; }
+  .lb-wins { color: #555; min-width: 36px; text-align: right; font-size: 10px; }
+
+  .lb-empty { font-size: 11px; color: #666; font-family: 'Segoe UI', sans-serif; font-style: italic; text-align: center; padding: 4px 0; }
+
+  /* Name entry modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.65);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-box {
+    background: #c6c6c6;
+    border-top: 3px solid #ffffff;
+    border-left: 3px solid #ffffff;
+    border-right: 3px solid #555;
+    border-bottom: 3px solid #555;
+    padding: 16px 18px;
+    width: min(320px, 90vw);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .modal-title    { font-size: 13px; font-family: 'Segoe UI', sans-serif; font-weight: bold; color: #222; }
+  .modal-subtitle { font-size: 10px; font-family: 'Segoe UI', sans-serif; color: #555; margin-top: -6px; }
+
+  .modal-input {
+    background: #8b8b8b;
+    border-top: 2px solid #373737;
+    border-left: 2px solid #373737;
+    border-right: 2px solid #ffffff;
+    border-bottom: 2px solid #ffffff;
+    color: #fff;
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 5px 8px;
+    outline: none;
+    width: 100%;
+  }
+  .modal-input::placeholder { color: #bbb; font-weight: normal; }
+  .modal-input:focus { background: #9a9a9a; border-top-color: #222; border-left-color: #222; }
+
+  .modal-row { display: flex; gap: 8px; justify-content: flex-end; }
+
+  .modal-btn {
+    font-size: 12px;
+    font-family: 'Segoe UI', sans-serif;
+    font-weight: bold;
+    padding: 5px 14px;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    background: #aaaaaa;
+    border-top: 3px solid #dddddd;
+    border-left: 3px solid #dddddd;
+    border-right: 3px solid #444;
+    border-bottom: 3px solid #444;
+    color: #333;
+  }
+  .modal-btn:hover { background: #bbbbbb; }
+  .modal-btn.primary { background: #7ab87a; border-top: 3px solid #aff5af; border-left: 3px solid #aff5af; border-right: 3px solid #2a5a2a; border-bottom: 3px solid #2a5a2a; color: #1a3d1a; }
+  .modal-btn.primary:hover { background: #8acc8a; }
+
+  .modal-err { font-size: 10px; color: #cc2222; font-family: 'Segoe UI', sans-serif; min-height: 14px; }
+
+  .win-score-flash {
+    text-align: center;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 11px;
+    color: #1a3d1a;
+    background: #aff5af;
+    border: 1px solid #5a8a5a;
+    padding: 3px 6px;
+    margin: 2px 0;
+    display: none;
+  }
+  .win-score-flash.show { display: block; }
+
+  .selected-display {
+    margin-top: 12px;
+    background: #111;
+    border: 1px solid #333;
+    border-radius: 4px;
+    padding: 7px 14px;
+    color: #aaffaa;
+    font-size: 11px;
+    max-width: 400px;
+    width: 100%;
+    word-break: break-all;
+    text-align: center;
+  }
+
+  .clear-btn {
+    margin-top: 6px;
+    background: #3a3a3a;
+    color: #ccc;
+    border: 1px solid #555;
+    border-radius: 3px;
+    padding: 6px 18px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: monospace;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .clear-btn:hover { background: #555; color: #fff; }
+</style>
+</head>
+<body>
+
+<!-- Name registration modal -->
+<div class="modal-overlay" id="name-modal">
+  <div class="modal-box">
+    <div class="modal-title">⛏️ Enter your name</div>
+    <div class="modal-subtitle">Your scores will be shown globally.</div>
+    <input class="modal-input" id="name-input" maxlength="16" placeholder="Steve" autocomplete="off" spellcheck="false">
+    <div class="modal-err" id="name-err"></div>
+    <div class="modal-row">
+      <div class="modal-btn" id="name-cancel-btn" onclick="cancelNameModal()">Play as Guest</div>
+      <div class="modal-btn primary" onclick="confirmName()">Save ✓</div>
+    </div>
+  </div>
+</div>
+
+<div class="chest-wrapper">
+  <div class="tabs">
+    <div class="tab" id="tab-large" onclick="switchTab('large')">Large Chest</div>
+    <div class="tab" id="tab-small"  onclick="switchTab('small')">Small Chest</div>
+    <div class="tab active" id="tab-hopper" onclick="switchTab('hopper')">Hopper</div>
+  </div>
+  <div class="chest-container">
+
+    <div class="section-label" id="chest-label">Hopper</div>
+    <div class="grid" id="chest-grid"></div>
+
+    <div class="divider"></div>
+
+    <!-- Player bar -->
+    <div class="player-bar">
+      <div class="player-name-display" id="player-display" onclick="openNameModal()">👤 Guest</div>
+      <div class="lb-toggle-btn" onclick="toggleLeaderboard()">🏆 Leaderboard</div>
+    </div>
+
+    <!-- Leaderboard panel -->
+    <div class="lb-panel" id="lb-panel">
+      <div class="lb-title">
+        <span>🏆 Best Times (9×9 · 10 mines)</span>
+      </div>
+      <div id="lb-rows"></div>
+    </div>
+
+    <!-- Win flash -->
+    <div class="win-score-flash" id="win-flash"></div>
+
+    <!-- HUD -->
+    <div class="ms-hud" style="width:100%">
+      <div class="ms-counter" id="mine-counter">10</div>
+      <div class="ms-face-btn" id="face-btn" onclick="resetGame()" title="New Game">(╹ڡ╹ )</div>
+      <div class="ms-counter" id="timer-display">000</div>
+    </div>
+
+    <div class="section-label">Inventory</div>
+    <div class="tool-switcher">
+      <div class="tool-btn active-dig" id="tool-dig"  onclick="setTool('dig')">&#9935; Dig</div>
+      <div class="tool-btn"           id="tool-flag" onclick="setTool('flag')">&#128681; Flag</div>
+      <span class="tool-label" id="tool-hint">tap to dig · hold/right-click to flag</span>
+    </div>
+    <div class="ms-grid" id="ms-grid"></div>
+
+    <div style="height:4px"></div>
+    <div class="grid" id="hotbar-grid"></div>
+
+  </div>
+</div>
+
+<div class="selected-display" id="selected-label">Selected chest slots: none</div>
+<button class="clear-btn" onclick="clearChestSelection()">Clear Selection</button>
+
+<script>
+  // ─── RESPONSIVE CELL SIZE ─────────────────────────────────────────
+  function setCellSize() {
+    const maxW = Math.min(window.innerWidth - 24, 400);
+    const cell = Math.max(28, Math.min(Math.floor((maxW - 42) / 9), 40));
+    document.documentElement.style.setProperty('--cell', cell + 'px');
+  }
+  setCellSize();
+  window.addEventListener('resize', setCellSize);
+
+  // ─── AUDIO ────────────────────────────────────────────────────────
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let audioCtx = null;
+  function getCtx() {
+    if (!audioCtx) audioCtx = new AudioCtx();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function playClick() {
+    const ctx = getCtx(), now = ctx.currentTime, sr = ctx.sampleRate;
+    const len = Math.floor(sr * 0.06);
+    const buf = ctx.createBuffer(1, len, sr);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) d[i] = (Math.random()*2-1) * Math.exp(-i/sr*120);
+    const src = ctx.createBufferSource(); src.buffer = buf;
+    const bpf = ctx.createBiquadFilter(); bpf.type='bandpass'; bpf.frequency.value=2200; bpf.Q.value=2.5;
+    const g = ctx.createGain(); g.gain.setValueAtTime(0.45,now); g.gain.exponentialRampToValueAtTime(0.0001,now+0.06);
+    src.connect(bpf); bpf.connect(g); g.connect(ctx.destination);
+    src.start(now); src.stop(now+0.07);
+    const o = ctx.createOscillator(), og = ctx.createGain();
+    o.type='sine'; o.frequency.setValueAtTime(820,now); o.frequency.exponentialRampToValueAtTime(480,now+0.04);
+    og.gain.setValueAtTime(0.12,now); og.gain.exponentialRampToValueAtTime(0.0001,now+0.05);
+    o.connect(og); og.connect(ctx.destination); o.start(now); o.stop(now+0.06);
+  }
+
+  function playDig() {
+    const ctx = getCtx(), sr = ctx.sampleRate, now = ctx.currentTime;
+    const master = ctx.createGain(); master.gain.value=1.0; master.connect(ctx.destination);
+    const revLen = Math.floor(sr*0.55);
+    const revBuf = ctx.createBuffer(2, revLen, sr);
+    for (let ch=0; ch<2; ch++) {
+      const d = revBuf.getChannelData(ch);
+      for (let i=0; i<revLen; i++) {
+        const t=i/sr, earlyRef=(i<sr*0.02)?Math.exp(-t*60)*1.4:0;
+        d[i]=(Math.random()*2-1)*(Math.exp(-t*7)+earlyRef);
+      }
+    }
+    const reverb=ctx.createConvolver(); reverb.buffer=revBuf;
+    const revGain=ctx.createGain(); revGain.gain.value=0.38;
+    reverb.connect(revGain); revGain.connect(master);
+    function spawnNoise(dur,buildFn,lpF,lpQ,pkF,pkG,gainPk) {
+      const len=Math.floor(sr*dur), b=ctx.createBuffer(1,len,sr);
+      buildFn(b.getChannelData(0),len,sr);
+      const src=ctx.createBufferSource(); src.buffer=b;
+      const lpf=ctx.createBiquadFilter(); lpf.type='lowpass'; lpf.frequency.value=lpF; lpf.Q.value=lpQ;
+      const pk=ctx.createBiquadFilter(); pk.type='peaking'; pk.frequency.value=pkF; pk.gain.value=pkG; pk.Q.value=1.4;
+      const g=ctx.createGain(); g.gain.setValueAtTime(gainPk,now); g.gain.exponentialRampToValueAtTime(0.0001,now+dur);
+      src.connect(lpf); lpf.connect(pk); pk.connect(g); g.connect(master); g.connect(reverb);
+      src.start(now); src.stop(now+dur+0.01);
+    }
+    spawnNoise(0.22,(d,len,sr)=>{
+      for(let i=0;i<len;i++){const t=i/sr; d[i]=(Math.random()*2-1)*(Math.exp(-t*45)+Math.exp(-t*12)*0.5);}
+      [0.003,0.014,0.028,0.048,0.072].forEach(ct=>{
+        const ci=Math.floor(ct*sr);
+        for(let k=0;k<Math.floor(sr*0.007);k++) if(ci+k<len) d[ci+k]+=(Math.random()*2-1)*Math.exp(-k/(sr*0.0025))*1.1;
+      });
+    },1100,1.1,220,11,1.1);
+    spawnNoise(0.28,(d,len,sr)=>{for(let i=0;i<len;i++){const t=i/sr;d[i]=(Math.random()*2-1)*Math.exp(-t*9)*0.7;}},600,0.9,150,8,0.7);
+    const subO=ctx.createOscillator(),subG=ctx.createGain();
+    subO.type='sine'; subO.frequency.setValueAtTime(95,now); subO.frequency.exponentialRampToValueAtTime(38,now+0.14);
+    subG.gain.setValueAtTime(0.55,now); subG.gain.exponentialRampToValueAtTime(0.0001,now+0.18);
+    subO.connect(subG); subG.connect(master); subG.connect(reverb); subO.start(now); subO.stop(now+0.19);
+    const bO=ctx.createOscillator(),bG=ctx.createGain();
+    bO.type='triangle'; bO.frequency.setValueAtTime(200,now); bO.frequency.exponentialRampToValueAtTime(110,now+0.09);
+    bG.gain.setValueAtTime(0.22,now); bG.gain.exponentialRampToValueAtTime(0.0001,now+0.12);
+    bO.connect(bG); bG.connect(master); bG.connect(reverb); bO.start(now); bO.stop(now+0.13);
+  }
+
+  function playFlag(placing) {
+    const ctx = getCtx();
+    if (placing) {
+      const o1=ctx.createOscillator(),g1=ctx.createGain();
+      o1.connect(g1); g1.connect(ctx.destination); o1.type='square';
+      o1.frequency.setValueAtTime(200,ctx.currentTime); o1.frequency.exponentialRampToValueAtTime(800,ctx.currentTime+0.07);
+      g1.gain.setValueAtTime(0.2,ctx.currentTime); g1.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.09);
+      o1.start(); o1.stop(ctx.currentTime+0.1);
+      const o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination); o2.type='sine';
+      o2.frequency.setValueAtTime(120,ctx.currentTime+0.05); o2.frequency.exponentialRampToValueAtTime(50,ctx.currentTime+0.18);
+      g2.gain.setValueAtTime(0.35,ctx.currentTime+0.05); g2.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.2);
+      o2.start(ctx.currentTime+0.05); o2.stop(ctx.currentTime+0.21);
+    } else {
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='triangle';
+      o.frequency.setValueAtTime(700,ctx.currentTime); o.frequency.exponentialRampToValueAtTime(180,ctx.currentTime+0.1);
+      g.gain.setValueAtTime(0.18,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.12);
+      o.start(); o.stop(ctx.currentTime+0.13);
+    }
+  }
+
+  function playTab() {
+    const ctx=getCtx();
+    const buf=ctx.createBuffer(1,Math.floor(ctx.sampleRate*0.05),ctx.sampleRate);
+    const data=buf.getChannelData(0);
+    for(let i=0;i<data.length;i++) data[i]=(Math.random()*2-1)*Math.exp(-i/(ctx.sampleRate*0.007));
+    const src=ctx.createBufferSource(), filt=ctx.createBiquadFilter(), g=ctx.createGain();
+    filt.type='bandpass'; filt.frequency.value=1400; filt.Q.value=2.5;
+    src.buffer=buf; src.connect(filt); filt.connect(g); g.connect(ctx.destination);
+    g.gain.setValueAtTime(0.7,ctx.currentTime);
+    src.start(); src.stop(ctx.currentTime+0.06);
+  }
+
+  function playDeath() {
+    const ctx=getCtx();
+    [[0,300,250,0.18],[0.22,250,200,0.18],[0.44,200,160,0.18],[0.66,160,80,0.55]].forEach(([t,f0,f1,dur])=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='sawtooth';
+      o.frequency.setValueAtTime(f0,ctx.currentTime+t); o.frequency.exponentialRampToValueAtTime(f1,ctx.currentTime+t+dur);
+      g.gain.setValueAtTime(0.3,ctx.currentTime+t); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+dur+0.05);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+dur+0.06);
+    });
+  }
+
+  function playReset() {
+    const ctx=getCtx();
+    [523,659,784,1047].forEach((freq,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type='square';
+      const t=ctx.currentTime+i*0.1;
+      o.frequency.setValueAtTime(freq,t); g.gain.setValueAtTime(0.15,t); g.gain.exponentialRampToValueAtTime(0.001,t+0.18);
+      o.start(t); o.stop(t+0.19);
+    });
+  }
+
+  function playWin() {
+    const ctx=getCtx();
+    const o=ctx.createOscillator(),g=ctx.createGain();
+    o.connect(g); g.connect(ctx.destination); o.type='sine';
+    o.frequency.setValueAtTime(400,ctx.currentTime); o.frequency.exponentialRampToValueAtTime(1600,ctx.currentTime+0.5);
+    g.gain.setValueAtTime(0.3,ctx.currentTime); g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.55);
+    o.start(); o.stop(ctx.currentTime+0.56);
+    [0.55,0.65,0.75].forEach((t,i)=>{
+      const o2=ctx.createOscillator(),g2=ctx.createGain();
+      o2.connect(g2); g2.connect(ctx.destination); o2.type='triangle';
+      o2.frequency.value=[1047,1319,1568][i];
+      g2.gain.setValueAtTime(0.2,ctx.currentTime+t); g2.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+t+0.15);
+      o2.start(ctx.currentTime+t); o2.stop(ctx.currentTime+t+0.16);
+    });
+  }
+
+  // ─── PLAYER REGISTRATION ──────────────────────────────────────────
+  // ─── JSONBIN CONFIG — fill these in ──────────────────────────────
+  const JSONBIN_BIN_ID  = '699f77d7d0ea881f40d9a2a9';   // e.g. '664abc123...'
+  const JSONBIN_API_KEY = '$2a$10$TjfOg5vD6Ufz1ZGhS..0T..O8guwm6rtJwC/rno9QDnRrSH5EX0He';  // e.g. '$2a$10$...'
+  // ──────────────────────────────────────────────────────────────────
+
+  const LS_PLAYER = 'ms-player-name';
+  let currentPlayer = localStorage.getItem(LS_PLAYER) || null;
+
+  // ─── PLAYER MODAL ─────────────────────────────────────────────────
+  function openNameModal() {
+    const input     = document.getElementById('name-input');
+    const cancelBtn = document.getElementById('name-cancel-btn');
+    input.value     = currentPlayer || '';
+    document.getElementById('name-err').textContent = '';
+    cancelBtn.textContent = currentPlayer ? 'Cancel' : 'Play as Guest';
+    document.getElementById('name-modal').style.display = 'flex';
+    setTimeout(() => input.focus(), 80);
+  }
+
+  function cancelNameModal() {
+    document.getElementById('name-modal').style.display = 'none';
+    updatePlayerBadge();
+  }
+
+  function confirmName() {
+    const raw   = document.getElementById('name-input').value.trim();
+    const errEl = document.getElementById('name-err');
+    if (!raw)           { errEl.textContent = 'Please enter a name.'; return; }
+    if (raw.length < 2) { errEl.textContent = 'At least 2 characters required.'; return; }
+    if (!/^[a-zA-Z0-9_\- ]+$/.test(raw)) { errEl.textContent = 'Letters, numbers, spaces, _ and - only.'; return; }
+    currentPlayer = raw;
+    localStorage.setItem(LS_PLAYER, currentPlayer);
+    document.getElementById('name-modal').style.display = 'none';
+    updatePlayerBadge();
+    if (document.getElementById('lb-panel').classList.contains('open')) loadAndRenderLeaderboard();
+  }
+
+  function updatePlayerBadge() {
+    document.getElementById('player-display').textContent =
+      currentPlayer ? '👤 ' + currentPlayer : '👤 Guest';
+  }
+
+  document.getElementById('name-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') confirmName();
+    if (e.key === 'Escape') cancelNameModal();
+  });
+
+  // ─── JSONBIN LEADERBOARD ──────────────────────────────────────────
+  const JSONBIN_URL     = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+  const JSONBIN_HEADERS = { 'X-Master-Key': JSONBIN_API_KEY, 'Content-Type': 'application/json' };
+
+  // Fetch current entries from JSONBin
+  async function fetchEntries() {
+    let res;
+    try {
+      res = await fetch(JSONBIN_URL + '/latest', { headers: JSONBIN_HEADERS });
+    } catch(netErr) {
+      throw new Error('Network error: ' + netErr.message);
+    }
+    if (!res.ok) {
+      let body = ''; try { body = await res.text(); } catch(_) {}
+      throw new Error('HTTP ' + res.status + ': ' + body.slice(0, 200));
+    }
+    const data = await res.json();
+    const raw = Array.isArray(data.record) ? data.record : [];
+    return raw.filter(e => e && typeof e.name === 'string');
+  }
+
+  // Write updated entries back to JSONBin
+  async function pushEntries(entries) {
+    const res = await fetch(JSONBIN_URL, {
+      method: 'PUT',
+      headers: JSONBIN_HEADERS,
+      body: JSON.stringify(entries)
+    });
+    if (!res.ok) {
+      let body = ''; try { body = await res.text(); } catch(_) {}
+      throw new Error('HTTP ' + res.status + ': ' + body.slice(0, 200));
+    }
+  }
+
+  function toggleLeaderboard() {
+    const panel = document.getElementById('lb-panel');
+    panel.classList.toggle('open');
+    if (panel.classList.contains('open')) loadAndRenderLeaderboard();
+    playTab();
+  }
+
+  async function loadAndRenderLeaderboard() {
+    const rowsEl = document.getElementById('lb-rows');
+    rowsEl.innerHTML = '<div class="lb-empty" style="color:#888">Loading…</div>';
+    try {
+      const entries = await fetchEntries();
+      renderLeaderboard(entries);
+    } catch(e) {
+      rowsEl.innerHTML = '<div class="lb-empty" style="color:#c33;font-style:normal">' + e.message + '</div>';
+    }
+  }
+
+  function renderLeaderboard(entries) {
+    const rowsEl = document.getElementById('lb-rows');
+    if (!entries.length) {
+      rowsEl.innerHTML = '<div class="lb-empty">No scores yet — be the first to win!</div>';
+      return;
+    }
+    const sorted = [...entries].sort((a, b) => a.best - b.best || b.wins - a.wins);
+    const medals = ['gold', 'silver', 'bronze'];
+    rowsEl.innerHTML = sorted.slice(0, 10).map((e, i) => {
+      const sym  = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1)+'.';
+      const isMe = currentPlayer && e.name === currentPlayer;
+      return `<div class="lb-row">
+        <span class="lb-rank ${medals[i]||''}">${sym}</span>
+        <span class="lb-pname ${isMe?'me':''}">${esc(e.name)}${isMe?' ★':''}</span>
+        <span class="lb-time">${String(e.best).padStart(3,'0')}s</span>
+        <span class="lb-wins">${e.wins}W</span>
+      </div>`;
+    }).join('');
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  async function submitScore(timeSeconds) {
+    const flash = document.getElementById('win-flash');
+
+    if (!currentPlayer) {
+      flash.innerHTML = `You won in ${timeSeconds}s! <u style="cursor:pointer" onclick="openNameModal()">Set a name to save score</u>`;
+      flash.classList.add('show');
+      setTimeout(() => flash.classList.remove('show'), 5000);
+      return;
+    }
+
+    flash.textContent = `Saving score…`;
+    flash.classList.add('show');
+
+    try {
+      const entries = await fetchEntries();
+      const idx     = entries.findIndex(e => e.name === currentPlayer);
+      let isNewBest = false;
+
+      if (idx >= 0) {
+        isNewBest = timeSeconds < entries[idx].best;
+        entries[idx].wins += 1;
+        if (isNewBest) entries[idx].best = timeSeconds;
+      } else {
+        isNewBest = true;
+        entries.push({ name: currentPlayer, best: timeSeconds, wins: 1 });
+      }
+
+      await pushEntries(entries);
+
+      const saved = entries[idx >= 0 ? idx : entries.length - 1];
+      flash.textContent = isNewBest
+        ? `🏆 ${currentPlayer}: ${timeSeconds}s — NEW BEST!`
+        : `✓ ${currentPlayer}: ${timeSeconds}s saved (best: ${saved.best}s)`;
+      setTimeout(() => flash.classList.remove('show'), 4000);
+
+      if (document.getElementById('lb-panel').classList.contains('open')) renderLeaderboard(entries);
+    } catch(e) {
+      flash.textContent = `Won in ${timeSeconds}s! (score save failed — check Gist config)`;
+      setTimeout(() => flash.classList.remove('show'), 5000);
+    }
+  }
+
+  // ─── CHEST ────────────────────────────────────────────────────────
+  const chestSelected = new Set();
+
+  function updateChestLabel() {
+    const label = document.getElementById('selected-label');
+    if (chestSelected.size === 0) {
+      label.textContent = 'Selected chest slots: none | Total: 0';
+    } else {
+      const sorted = [...chestSelected].sort((a,b)=>a-b);
+      label.textContent = 'Selected chest slots: ' + sorted.join(', ') + ' | Total: ' + sorted.length;
+    }
+  }
+
+  function clearChestSelection() {
+    chestSelected.clear();
+    document.querySelectorAll('#chest-grid .slot.selected').forEach(s=>s.classList.remove('selected'));
+    updateChestLabel();
+  }
+
+  const CHEST_CONFIGS = {
+    large:  { slots: 54, cols: 9, label: 'Large Chest' },
+    small:  { slots: 27, cols: 9, label: 'Small Chest' },
+    hopper: { slots: 5,  cols: 5, label: 'Hopper' },
+  };
+  let currentTab = 'hopper';
+
+  function switchTab(type) {
+    if (type === currentTab) return;
+    playTab(); currentTab = type;
+    chestSelected.clear(); updateChestLabel();
+    ['large','small','hopper'].forEach(t =>
+      document.getElementById('tab-'+t).classList.toggle('active', t===type)
+    );
+    buildChestGrid();
+  }
+
+  function buildChestGrid() {
+    const cfg = CHEST_CONFIGS[currentTab];
+    const chestGrid = document.getElementById('chest-grid');
+    chestGrid.innerHTML = '';
+    chestGrid.style.gridTemplateColumns = `repeat(${cfg.cols}, var(--cell))`;
+    chestGrid.style.justifyContent = currentTab==='hopper' ? 'center' : 'start';
+    document.getElementById('chest-label').textContent = cfg.label;
+    for (let i=0; i<cfg.slots; i++) {
+      const slot = document.createElement('div');
+      slot.className = 'slot';
+      slot.textContent = i;
+      slot.addEventListener('click', () => {
+        playClick();
+        slot.classList.toggle('selected');
+        chestSelected.has(i) ? chestSelected.delete(i) : chestSelected.add(i);
+        updateChestLabel();
+      });
+      chestGrid.appendChild(slot);
+    }
+  }
+
+  buildChestGrid();
+
+  const hotbarGrid = document.getElementById('hotbar-grid');
+  hotbarGrid.style.gridTemplateColumns = 'repeat(9, var(--cell))';
+  for (let i=0; i<9; i++) {
+    const s = document.createElement('div'); s.className='slot'; s.style.cursor='default';
+    hotbarGrid.appendChild(s);
+  }
+
+  // ─── MINESWEEPER ──────────────────────────────────────────────────
+  const ROWS=9, COLS=9, TOTAL_MINES=10, LONG_PRESS_MS=500;
+  let flagMode=false, board=[], gameOver=false, gameWon=false,
+      firstClick=true, flagCount=0, timerVal=0, timerInterval=null;
+
+  function setTool(tool) {
+    flagMode = (tool==='flag');
+    const msGrid = document.getElementById('ms-grid');
+    document.getElementById('tool-dig').className  = 'tool-btn' + (flagMode ? '' : ' active-dig');
+    document.getElementById('tool-flag').className = 'tool-btn' + (flagMode ? ' active-flag' : '');
+    document.getElementById('tool-hint').textContent = flagMode
+      ? 'tap to flag · right-click to dig'
+      : 'tap to dig · hold/right-click to flag';
+    flagMode ? msGrid.classList.add('flag-mode') : msGrid.classList.remove('flag-mode');
+    playTab();
+  }
+
+  function resetGame() {
+    clearInterval(timerInterval); playReset();
+    timerVal=0; gameOver=false; gameWon=false; firstClick=true; flagCount=0;
+    document.getElementById('mine-counter').textContent = String(TOTAL_MINES).padStart(3,'0');
+    document.getElementById('timer-display').textContent = '000';
+    document.getElementById('face-btn').textContent = '(╹ڡ╹ )';
+    document.getElementById('win-flash').classList.remove('show');
+    initBoard(); renderBoard();
+  }
+
+  function initBoard() {
+    board = [];
+    for (let r=0;r<ROWS;r++) {
+      board[r] = [];
+      for (let c=0;c<COLS;c++) board[r][c] = {mine:false,revealed:false,flagged:false,count:0};
+    }
+  }
+
+  function placeMines(safeR,safeC) {
+    const safe = new Set();
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=safeR+dr, nc=safeC+dc;
+      if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS) safe.add(nr*COLS+nc);
+    }
+    let placed=0;
+    while (placed<TOTAL_MINES) {
+      const r=Math.floor(Math.random()*ROWS), c=Math.floor(Math.random()*COLS);
+      if (!board[r][c].mine && !safe.has(r*COLS+c)) { board[r][c].mine=true; placed++; }
+    }
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (!board[r][c].mine) board[r][c].count = countNeighborMines(r,c);
+  }
+
+  function countNeighborMines(r,c) {
+    let n=0;
+    for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) {
+      const nr=r+dr, nc=c+dc;
+      if (nr>=0&&nr<ROWS&&nc>=0&&nc<COLS&&board[nr][nc].mine) n++;
+    }
+    return n;
+  }
+
+  function reveal(r,c) {
+    if (r<0||r>=ROWS||c<0||c>=COLS) return;
+    const cell=board[r][c];
+    if (cell.revealed||cell.flagged) return;
+    cell.revealed=true;
+    if (cell.count===0&&!cell.mine)
+      for (let dr=-1;dr<=1;dr++) for (let dc=-1;dc<=1;dc++) reveal(r+dr,c+dc);
+  }
+
+  function checkWin() {
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++)
+      if (!board[r][c].mine&&!board[r][c].revealed) return false;
+    return true;
+  }
+
+  function handleClick(r,c) {
+    if (gameOver||gameWon) return;
+    const cell=board[r][c];
+    if (cell.revealed||cell.flagged) return;
+    if (firstClick) {
+      firstClick=false; placeMines(r,c);
+      timerInterval=setInterval(()=>{
+        timerVal=Math.min(timerVal+1,999);
+        document.getElementById('timer-display').textContent=String(timerVal).padStart(3,'0');
+      },1000);
+    }
+    if (cell.mine) {
+      cell.revealed=true; gameOver=true; clearInterval(timerInterval);
+      playDeath(); document.getElementById('face-btn').textContent="(┬┬﹏┬┬)";
+      revealAllMines(r,c); renderBoard(); return;
+    }
+    reveal(r,c); playDig();
+    if (checkWin()) {
+      gameWon=true; clearInterval(timerInterval); playWin();
+      document.getElementById('face-btn').textContent="~\\(≧▽≦)/~";
+      for (let rr=0;rr<ROWS;rr++) for (let cc=0;cc<COLS;cc++)
+        if (board[rr][cc].mine) board[rr][cc].flagged=true;
+      flagCount=TOTAL_MINES;
+      document.getElementById('mine-counter').textContent='000';
+      submitScore(timerVal);
+    }
+    renderBoard();
+  }
+
+  function handleFlag(r,c) {
+    if (gameOver||gameWon) return;
+    const cell=board[r][c];
+    if (cell.revealed) return;
+    if (!cell.flagged&&flagCount>=TOTAL_MINES) return;
+    cell.flagged=!cell.flagged; flagCount+=cell.flagged?1:-1;
+    playFlag(cell.flagged);
+    document.getElementById('mine-counter').textContent=String(Math.max(0,TOTAL_MINES-flagCount)).padStart(3,'0');
+    renderBoard();
+  }
+
+  function revealAllMines(hitR,hitC) {
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+      const cell=board[r][c];
+      if (cell.mine&&!(r===hitR&&c===hitC)) cell.revealed=true;
+      if (!cell.mine&&cell.flagged) cell.wrongFlag=true;
+    }
+  }
+
+  const NUM_COLORS=['','#1111cc','#117711','#cc1111','#111177','#771111','#117777','#111111','#777777'];
+
+  function renderBoard() {
+    const grid=document.getElementById('ms-grid'); grid.innerHTML='';
+    for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+      const cell=board[r][c], el=document.createElement('div'); el.className='ms-cell';
+      if (cell.revealed) {
+        if (cell.mine) { el.classList.add('mine-hit'); el.textContent='💣'; }
+        else { el.classList.add('revealed'); if(cell.count>0){el.textContent=cell.count; el.style.color=NUM_COLORS[cell.count];} }
+      } else if (cell.flagged) {
+        el.classList.add('flagged'); el.textContent='🚩';
+      } else if (cell.wrongFlag) {
+        el.classList.add('revealed'); el.textContent='❌';
+      } else {
+        el.classList.add('hidden');
+      }
+
+      const rr=r, cc=c;
+      el.addEventListener('click', () => { if(flagMode) handleFlag(rr,cc); else handleClick(rr,cc); });
+      el.addEventListener('contextmenu', e => { e.preventDefault(); if(flagMode) handleClick(rr,cc); else handleFlag(rr,cc); });
+
+      let pressTimer=null, didLongPress=false;
+      el.addEventListener('touchstart', e => {
+        e.preventDefault();
+        if (audioCtx&&audioCtx.state==='suspended') audioCtx.resume();
+        didLongPress=false;
+        if (!cell.revealed) el.classList.add('pressing');
+        pressTimer=setTimeout(()=>{
+          didLongPress=true; el.classList.remove('pressing');
+          if (flagMode) handleClick(rr,cc); else handleFlag(rr,cc);
+        }, LONG_PRESS_MS);
+      }, {passive:false});
+      el.addEventListener('touchend', e => {
+        e.preventDefault(); clearTimeout(pressTimer); el.classList.remove('pressing');
+        if (!didLongPress) { if(flagMode) handleFlag(rr,cc); else handleClick(rr,cc); }
+      }, {passive:false});
+      el.addEventListener('touchmove', e => {
+        clearTimeout(pressTimer); el.classList.remove('pressing'); didLongPress=true;
+      }, {passive:false});
+
+      grid.appendChild(el);
+    }
+  }
+
+  // ─── INIT ─────────────────────────────────────────────────────────
+  updatePlayerBadge();
+  resetGame();
+  if (!currentPlayer) openNameModal(); // prompt on first ever visit
+</script>
+</body>
+</html>
