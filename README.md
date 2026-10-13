@@ -4,7 +4,7 @@ Personal website and art portfolio repository for Dhenias Syafe'i Suryawijaya (A
 
 ✦ Live Site: https://dhenias.github.io/
 
-────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────
 
 ✦ About
 
@@ -18,7 +18,7 @@ This repo holds my personal Link-in-Bio landing page and artwork portfolio hoste
 - Interactive Canvas Particles
 - Web Audio API Synthesis
 
-────────────────────────────────────────────────────────────────────────────
+────────────────────────────────────────────────────────────────────
 
 ✦ Copyright Notice
 
