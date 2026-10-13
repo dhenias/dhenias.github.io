@@ -1,43 +1,1083 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Dhenias Syafe'i Suryawijaya - Animator & Digital Artist. Siswa Animasi SMKN 2 Cikarang Barat.">
-    <meta name="keywords" content="Dhenias, Animator, Digital Artist, Portofolio, Karya">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dhenias Syafe'i Suryawijaya - Animator & Digital Artist Portfolio Links">
+    <meta name="keywords" content="Dhenias, Animator, Digital Artist, Portofolio, SMKN 2 Cikarang Barat">
     <link rel="icon" type="image/png" href="portfolio/img/den.png">
-    <title>Dhenias Syafe'i Suryawijaya</title>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    
+    <title>Dhenias Syafe'i Suryawijaya | Animator & Digital Artist</title>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0a0d1a 0%, #121629 100%);
+            --card-bg: rgba(18, 22, 41, 0.82);
+            --card-border: rgba(255, 255, 255, 0.12);
+            --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-gold: #f4d35e;
+            --accent-purple: #a855f7;
+            --accent-cyan: #00f5d4;
+            
+            --pill-bg: rgba(255, 255, 255, 0.08);
+            --pill-border: rgba(255, 255, 255, 0.12);
+            --bio-bg: rgba(10, 13, 26, 0.5);
+            
+            --header-bg: rgba(18, 22, 41, 0.85);
+            --header-border: rgba(255, 255, 255, 0.12);
+
+            --modal-bg: rgba(18, 22, 41, 0.95);
+            --modal-border: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Light Mode Overrides - High Contrast & Soft Eyecare Colors */
+        body.light-mode {
+            --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --card-border: rgba(203, 213, 225, 0.9);
+            --card-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08);
+            
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --accent-gold: #d97706;
+            --accent-purple: #6d28d9;
+            --accent-cyan: #0284c7;
+            
+            --pill-bg: #e2e8f0;
+            --pill-border: #cbd5e1;
+            --bio-bg: #ffffff;
+            
+            --header-bg: rgba(255, 255, 255, 0.9);
+            --header-border: rgba(203, 213, 225, 0.8);
+
+            --modal-bg: #ffffff;
+            --modal-border: #cbd5e1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', 'Ubuntu', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+        }
+
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: auto;
+            opacity: 0.6;
+        }
+
+        .top-header {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 500px;
+            padding: 0 20px;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            pointer-events: none;
+        }
+
+        .status-badge {
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--header-bg);
+            border: 1px solid var(--header-border);
+            backdrop-filter: blur(12px);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #10b981;
+            box-shadow: 0 0 8px #10b981;
+        }
+
+        .header-actions {
+            pointer-events: auto;
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--header-bg);
+            border: 1px solid var(--header-border);
+            backdrop-filter: blur(12px);
+            color: var(--accent-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 15px;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.08);
+            border-color: var(--accent-gold);
+        }
+
+        .landing-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 500px;
+            margin: 60px 0 20px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: var(--card-shadow);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 36px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .avatar-wrapper {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .avatar-aura {
+            position: absolute;
+            inset: -6px;
+            background: linear-gradient(45deg, #f4d35e, #a855f7, #00f5d4);
+            border-radius: 50%;
+            filter: blur(12px);
+            opacity: 0.6;
+            animation: pulseAura 4s infinite ease-in-out;
+        }
+
+        @keyframes pulseAura {
+            0%, 100% { transform: scale(0.98); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
+        .profile-pic {
+            position: relative;
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--card-bg);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .verified-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: #fff;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2px solid var(--card-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .gradient-title {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+            background: linear-gradient(135deg, #f4d35e 0%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        body.light-mode .gradient-title {
+            background: linear-gradient(135deg, #0f172a 0%, #4338ca 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--accent-purple);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 16px;
+        }
+
+        .tag-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .tag-pill {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            padding: 5px 12px;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .bio {
+            font-size: 13.5px;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            background: var(--bio-bg);
+            border: 1px solid var(--card-border);
+            padding: 14px 18px;
+            border-radius: 18px;
+            margin-bottom: 18px;
+            font-weight: 400;
+        }
+
+        .preview-trigger-btn {
+            width: 100%;
+            padding: 10px 16px;
+            margin-bottom: 22px;
+            border-radius: 14px;
+            background: rgba(168, 85, 247, 0.12);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            color: var(--text-primary);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        body.light-mode .preview-trigger-btn {
+            background: rgba(109, 40, 217, 0.08);
+            border-color: rgba(109, 40, 217, 0.25);
+            color: #4338ca;
+        }
+
+        .preview-trigger-btn:hover {
+            background: rgba(168, 85, 247, 0.25);
+            border-color: var(--accent-purple);
+        }
+
+        .links-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .link-btn {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 18px;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 600;
+            color: #ffffff;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .link-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            font-size: 18px;
+            width: 24px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btn-text {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .btn-title {
+            font-weight: 700;
+            line-height: 1.2;
+        }
+
+        .btn-desc {
+            font-size: 10px;
+            opacity: 0.85;
+            font-weight: 400;
+        }
+
+        .btn-subtext {
+            font-size: 11px;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+
+        /* Custom Button Brand Palettes */
+        .btn-portfolio {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #0f172a;
+        }
+
+        .btn-instagram {
+            background: linear-gradient(135deg, #e1306c 0%, #c13584 100%);
+        }
+
+        .btn-tiktok {
+            background: #0f172a;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        body.light-mode .btn-tiktok {
+            background: #1e293b;
+            color: #ffffff;
+        }
+
+        .btn-behance {
+            background: #1769ff;
+        }
+
+        .btn-linkedin {
+            background: #0a66c2;
+        }
+
+        .btn-github {
+            background: #1e293b;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-email {
+            background: #e11d48;
+        }
+
+        .btn-app {
+            background: var(--pill-bg);
+            border: 1px solid var(--pill-border);
+            color: var(--text-primary);
+        }
+
+        .badge-mini {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            font-size: 10px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-weight: 700;
+        }
+
+        .btn-trakteer {
+            background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+        }
+
+        .badge-support {
+            background: #f59e0b;
+            color: #0f172a;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        .footer-text {
+            margin-top: 28px;
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .footer-sub {
+            font-size: 10.5px;
+            margin-top: 4px;
+            opacity: 0.8;
+        }
+
+        /* Modal Structure */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: var(--modal-bg);
+            border: 1px solid var(--modal-border);
+            border-radius: 24px;
+            padding: 24px;
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-card {
+            transform: scale(1);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: var(--pill-bg);
+            border: none;
+            color: var(--text-secondary);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent-gold);
+            margin-bottom: 16px;
+        }
+
+        .modal-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .art-card {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            aspect-ratio: 1;
+        }
+
+        .art-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .art-label {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #fff;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .btn-modal-action {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background: var(--accent-gold);
+            color: #0f172a;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #0f172a;
+            color: #f8fafc;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 10px 20px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 200;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
 </head>
 <body>
+    <!-- Interactive Background Canvas -->
     <canvas id="canvas-bg"></canvas>
-    <button class="mode-toggle" id="mode-toggle" aria-label="Switch mode" title="Switch mode">
-        <span class="mode-icon"></span>
-    </button>
 
-    <div class="landing-container">
-        <img class="profile-pic" src="portfolio/img/den.png" alt="Dhenias Syafe'i Suryawijaya">
-        <h1>Dhenias Syafe'i Suryawijaya</h1>
-        <p class="subtitle">Animator & Digital Artist</p>
-        <p class="bio">Lulusan Animasi SMKN 2 Cikarang Barat. Saya membuat animasi 2D dan ilustrasi digital menggunakan Ibis Paint, Clip Studio Paint & ToonBoom Harmony.</p>
-
-        <div class="links-container">
-            <a href="portfolio/" class="link-btn btn-primary"><i class="fas fa-folder"></i> Lihat Portofolio</a>
-            <a href="https://instagram.com/dhenyash" target="_blank" rel="noopener" class="link-btn btn-instagram"><i class="fab fa-instagram"></i> Instagram</a>
-            <a href="https://tiktok.com/@dhenyash" target="_blank" rel="noopener" class="link-btn btn-tiktok"><i class="fab fa-tiktok"></i> TikTok</a>
-            <a href="https://www.behance.net/denyasonata" target="_blank" rel="noopener" class="link-btn btn-behance"><i class="fab fa-behance"></i> Behance</a>
-            <a href="https://www.linkedin.com/in/dhenias-syafe-i-suryawijaya-b32333362/" target="_blank" rel="noopener" class="link-btn btn-linkedin"><i class="fab fa-linkedin"></i> LinkedIn</a>
-            <a href="https://github.com/dhenias" target="_blank" rel="noopener" class="link-btn btn-github"><i class="fab fa-github"></i> GitHub</a>
-<!--        <a href="https://whatsapp.com/channel/0029VbCN6SiBadmTyLJTRp24" target="_blank" rel="noopener" class="link-btn btn-whatsapp"><i class="fab fa-whatsapp"></i> WhatsApp Channel</a>-->
-            <a href="mailto:dhenias08@gmail.com" class="link-btn btn-email"><i class="fas fa-envelope"></i> Email</a>
-            <a href="mc-chest-slots-counter-with-minesweeper" target="_blank" rel="noopener" class="link-btn btn-secondary"><i class=fas fa-flag></i> MC Chest Index + Minesweeper</a>
-            <a href="https://trakteer.id/deniass" target="_blank" rel="noopener" class="link-btn btn-secondary"><i class="fas fa-heart"></i> Support</a>
+    <header class="top-header">
+        <div class="status-badge">
+            <span class="status-dot"></span>
+            <span>Open for Commissions</span>
         </div>
 
-        <p class="footer-text">&copy; 2025 Dhenias Syafe'i Suryawijaya</p>
+        <div class="header-actions">
+            <!-- Share Profile Button -->
+            <button id="share-btn" class="icon-btn" title="Bagikan Profil" aria-label="Bagikan Profil">
+                <i class="fas fa-share-nodes"></i>
+            </button>
+
+            <!-- Light / Dark Mode Toggle -->
+            <button id="mode-toggle" class="icon-btn" title="Ganti Mode Tema" aria-label="Ganti Mode Tema">
+                <span id="mode-icon"><i class="fas fa-moon"></i></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="landing-container">
+        
+        <!-- Profile Picture & Glowing Avatar Frame -->
+        <div class="avatar-wrapper">
+            <div class="avatar-aura"></div>
+            <img 
+                id="profile-img" 
+                src="portfolio/img/den.png" 
+                alt="Dhenias Syafe'i Suryawijaya" 
+                class="profile-pic"
+                onerror="this.onerror=null; this.src='https://placehold.co/300x300/1e293b/f4d35e?text=Dhenias+Art';"
+            >
+            <div class="verified-badge" title="Verified Digital Artist">
+                <i class="fas fa-palette"></i>
+            </div>
+        </div>
+
+        <!-- Title & Roles -->
+        <h1 class="gradient-title">Dhenias Syafe'i</h1>
+        <p class="subtitle"><i class="fas fa-wand-magic-sparkles"></i> Animator & Digital Artist</p>
+
+        <!-- Skill Tags Pill Row -->
+        <div class="tag-row">
+            <span class="tag-pill"><i class="fas fa-film"></i> 2D Animation</span>
+            <span class="tag-pill"><i class="fas fa-paint-brush"></i> Clip Studio</span>
+            <span class="tag-pill"><i class="fas fa-vector-square"></i> ToonBoom</span>
+            <span class="tag-pill"><i class="fas fa-graduation-cap"></i> SMKN 2 Cikbar</span>
+        </div>
+
+        <!-- Bio Description -->
+        <p class="bio">
+            Lulusan Animasi SMKN 2 Cikarang Barat. Mengkreasikan ilustrasi digital, perancangan karakter, dan animasi 2D yang ekspresif.
+        </p>
+
+        <!-- Quick Artwork Preview Trigger -->
+        <button id="open-preview-btn" class="preview-trigger-btn">
+            <i class="fas fa-eye"></i> Quick Artwork Preview
+        </button>
+
+        <div class="links-container">
+            <!-- Main Portfolio Highlight -->
+            <a href="portfolio/" class="link-btn btn-portfolio tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fas fa-folder-open"></i></span>
+                    <div class="btn-text">
+                        <span class="btn-title">Lihat Portofolio Utama</span>
+                        <span class="btn-desc">Seni 2D, Frame-by-Frame, Showreel</span>
+                    </div>
+                </div>
+                <i class="fas fa-arrow-right btn-arrow"></i>
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://instagram.com/dhenyash" target="_blank" rel="noopener" class="link-btn btn-instagram tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fab fa-instagram"></i></span>
+                    <span class="btn-title">Instagram</span>
+                </div>
+                <span class="btn-subtext">@dhenyash <i class="fas fa-external-link-alt"></i></span>
+            </a>
+
+            <!-- TikTok -->
+            <a href="https://tiktok.com/@dhenyash" target="_blank" rel="noopener" class="link-btn btn-tiktok tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fab fa-tiktok"></i></span>
+                    <span class="btn-title">TikTok</span>
+                </div>
+                <span class="btn-subtext">@dhenyash <i class="fas fa-external-link-alt"></i></span>
+            </a>
+
+            <!-- Behance -->
+            <a href="https://www.behance.net/denyasonata" target="_blank" rel="noopener" class="link-btn btn-behance tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fab fa-behance"></i></span>
+                    <span class="btn-title">Behance Case Studies</span>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square btn-arrow"></i>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/in/dhenias-syafe-i-suryawijaya-b32333362/" target="_blank" rel="noopener" class="link-btn btn-linkedin tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fab fa-linkedin-in"></i></span>
+                    <span class="btn-title">LinkedIn Profile</span>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square btn-arrow"></i>
+            </a>
+
+            <!-- GitHub -->
+            <a href="https://github.com/dhenias" target="_blank" rel="noopener" class="link-btn btn-github tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fab fa-github"></i></span>
+                    <span class="btn-title">GitHub Repositories</span>
+                </div>
+                <i class="fas fa-arrow-up-right-from-square btn-arrow"></i>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:dhenias08@gmail.com" class="link-btn btn-email tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fas fa-envelope"></i></span>
+                    <span class="btn-title">Kirim Email Business</span>
+                </div>
+                <span class="btn-subtext">dhenias08@gmail.com</span>
+            </a>
+
+            <!-- Custom Interactive App -->
+            <a href="mc-chest-slots-counter-with-minesweeper" target="_blank" rel="noopener" class="link-btn btn-app tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fas fa-cubes"></i></span>
+                    <div class="btn-text">
+                        <span class="btn-title">MC Chest Index & Minesweeper</span>
+                        <span class="btn-desc">Interactive Game Tool</span>
+                    </div>
+                </div>
+                <span class="badge-mini">Mini-App</span>
+            </a>
+
+            <!-- Support / Trakteer -->
+            <a href="https://trakteer.id/deniass" target="_blank" rel="noopener" class="link-btn btn-trakteer tilt-card">
+                <div class="btn-content">
+                    <span class="btn-icon"><i class="fas fa-heart"></i></span>
+                    <span class="btn-title">Dukung Karya di Trakteer</span>
+                </div>
+                <span class="badge-support">Dukung</span>
+            </a>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-text">
+            <p>&copy; <span id="year">2026</span> Dhenias Syafe'i Suryawijaya</p>
+            <p class="footer-sub">Dibuat dengan dedikasi & seni digital • SMKN 2 Cikarang Barat</p>
+        </footer>
+
+    </main>
+
+    <div id="preview-modal" class="modal-overlay">
+        <div class="modal-card">
+            <button id="close-preview-btn" class="modal-close" aria-label="Tutup Preview"><i class="fas fa-xmark"></i></button>
+            <div class="modal-header">
+                <i class="fas fa-images"></i>
+                <h3>Mini Gallery Preview</h3>
+            </div>
+            <div class="modal-grid">
+                <div class="art-card">
+                    <img src="https://placehold.co/400x400/1e1b4b/f4d35e?text=2D+Animation" alt="2D Animation">
+                    <span class="art-label">Animation</span>
+                </div>
+                <div class="art-card">
+                    <img src="https://placehold.co/400x400/311042/00f5d4?text=Digital+Art" alt="Digital Art">
+                    <span class="art-label">Illustration</span>
+                </div>
+                <div class="art-card">
+                    <img src="https://placehold.co/400x400/064e3b/ffe66d?text=Character+Design" alt="Character Design">
+                    <span class="art-label">Character</span>
+                </div>
+                <div class="art-card">
+                    <img src="https://placehold.co/400x400/1e293b/f4d35e?text=Storyboards" alt="Storyboards">
+                    <span class="art-label">Storyboards</span>
+                </div>
+            </div>
+            <a href="portfolio/" class="btn-modal-action">Buka Portofolio Lengkap <i class="fas fa-arrow-right"></i></a>
+        </div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Toast Notification Popup -->
+    <div id="toast" class="toast">
+        <i id="toast-icon" class="fas fa-check-circle"></i>
+        <span id="toast-msg">Link berhasil disalin!</span>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+            }
+
+            playClick() {
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(580, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.05);
+
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.05);
+                } catch (e) {
+                    console.log('Audio feedback unavailable:', e);
+                }
+            }
+
+            playToggle() {
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(640, this.ctx.currentTime + 0.08);
+
+                    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.08);
+                } catch (e) {
+                    console.log('Audio feedback unavailable:', e);
+                }
+            }
+        }
+
+        const soundFX = new SoundFX();
+
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = Math.min(Math.floor(width / 20), 60);
+
+        const mouse = {
+            x: null,
+            y: null,
+            radius: 130
+        };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        window.addEventListener('mouseleave', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
+                this.baseAlpha = Math.random() * 0.4 + 0.2;
+                this.alpha = this.baseAlpha;
+                
+                const colors = ['#f4d35e', '#a855f7', '#00f5d4', '#3b82f6'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+
+                if (mouse.x !== null && mouse.y !== null) {
+                    const dx = mouse.x - this.x;
+                    const dy = mouse.y - this.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < mouse.radius) {
+                        const force = (mouse.radius - dist) / mouse.radius;
+                        this.x -= (dx / dist) * force * 2;
+                        this.y -= (dy / dist) * force * 2;
+                        this.alpha = Math.min(0.9, this.baseAlpha + force * 0.5);
+                    } else {
+                        this.alpha = this.baseAlpha;
+                    }
+                } else {
+                    this.alpha = this.baseAlpha;
+                }
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function connectParticles() {
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+
+                    if (dist < 100) {
+                        const isLight = document.body.classList.contains('light-mode');
+                        ctx.strokeStyle = isLight ? '#0284c7' : '#f4d35e';
+                        ctx.globalAlpha = (1 - dist / 100) * (isLight ? 0.15 : 0.25);
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            connectParticles();
+            requestAnimationFrame(animateCanvas);
+        }
+
+        animateCanvas();
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        const modeToggle = document.getElementById('mode-toggle');
+        const modeIcon = document.getElementById('mode-icon');
+        const body = document.body;
+
+        function applyTheme(isLight) {
+            if (isLight) {
+                body.classList.add('light-mode');
+                modeIcon.innerHTML = '<i class="fas fa-sun"></i>';
+                localStorage.setItem('mode', 'light');
+            } else {
+                body.classList.remove('light-mode');
+                modeIcon.innerHTML = '<i class="fas fa-moon"></i>';
+                localStorage.setItem('mode', 'dark');
+            }
+        }
+
+        const savedMode = localStorage.getItem('mode') || 'dark';
+        applyTheme(savedMode === 'light');
+
+        modeToggle.addEventListener('click', () => {
+            soundFX.playToggle();
+            const isCurrentlyLight = body.classList.contains('light-mode');
+            applyTheme(!isCurrentlyLight);
+        });
+
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                card.style.transform = `perspective(1000px) rotateX(${(-y / rect.height) * 10}deg) rotateY(${(x / rect.width) * 10}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            });
+
+            card.addEventListener('click', (e) => {
+                soundFX.playClick();
+                const href = card.getAttribute('href');
+                const target = card.getAttribute('target');
+
+                if (href && !href.startsWith('#')) {
+                    e.preventDefault();
+                    setTimeout(() => {
+                        if (target === '_blank') {
+                            window.open(href, '_blank', 'noopener,noreferrer');
+                        } else {
+                            window.location.href = href;
+                        }
+                    }, 120);
+                }
+            });
+        });
+
+        /* Toast Controls */
+        const toast = document.getElementById('toast');
+        const toastMsg = document.getElementById('toast-msg');
+        let toastTimeout;
+
+        function showToast(msg) {
+            toastMsg.textContent = msg;
+            toast.classList.add('show');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        document.getElementById('share-btn').addEventListener('click', () => {
+            soundFX.playClick();
+            if (navigator.share) {
+                navigator.share({
+                    title: "Dhenias Syafe'i Suryawijaya",
+                    text: 'Portfolio & Links | Animator & Digital Artist',
+                    url: window.location.href
+                }).catch(() => {});
+            } else {
+                const tempInput = document.createElement('input');
+                tempInput.value = window.location.href;
+                document.body.appendChild(tempInput);
+                tempInput.select();
+                document.execCommand('copy');
+                document.body.removeChild(tempInput);
+                showToast('Link profil berhasil disalin!');
+            }
+        });
+
+        /* Modal Controls */
+        const previewModal = document.getElementById('preview-modal');
+        const openPreviewBtn = document.getElementById('open-preview-btn');
+        const closePreviewBtn = document.getElementById('close-preview-btn');
+
+        function toggleModal(show) {
+            soundFX.playClick();
+            if (show) {
+                previewModal.classList.add('active');
+            } else {
+                previewModal.classList.remove('active');
+            }
+        }
+
+        openPreviewBtn.addEventListener('click', () => toggleModal(true));
+        closePreviewBtn.addEventListener('click', () => toggleModal(false));
+        previewModal.addEventListener('click', (e) => {
+            if (e.target === previewModal) toggleModal(false);
+        });
+
+        /* Footer Year */
+        document.getElementById('year').textContent = new Date().getFullYear();
+    </script>
 </body>
 </html>
