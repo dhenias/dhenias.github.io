@@ -1,4 +1,4 @@
-# Dhenias Syafe'i Suryawijaya ✦ Portfolio & Link Tree
+# Dhenias Syafe'i Suryawijaya ✦ Site for Me
 
 Personal website and art portfolio repository for Dhenias Syafe'i Suryawijaya (Animator & Digital Artist).
 
