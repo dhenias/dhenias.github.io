@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Dhenias Syafe'i Suryawijaya - Animator & Digital Artist Portfolio Links">
     <meta name="keywords" content="Dhenias, Animator, Digital Artist, Portofolio, SMKN 2 Cikarang Barat">
-    <link rel="icon" type="image/png" href="portfolio/img/den.png">
+    <link rel="icon" type="image/png" href="img/den.png">
     
-    <title>Dhenias Syafe'i Suryawijaya | Animator & Digital Artist</title>
+    <title>Dhenias Syafe'i Suryawijaya | Link in Bio</title>
 
     <!-- Google Fonts & FontAwesome -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,13 +18,13 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #0a0d1a 0%, #121629 100%);
-            --card-bg: rgba(18, 22, 41, 0.82);
-            --card-border: rgba(255, 255, 255, 0.12);
+            --card-bg: rgba(18, 22, 41, 0.85);
+            --card-border: rgba(244, 211, 94, 0.15);
             --card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             
             --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --text-muted: #64748b;
+            --text-secondary: #b8c1ec;
+            --text-muted: #8392ca;
             --accent-gold: #f4d35e;
             --accent-purple: #a855f7;
             --accent-cyan: #00f5d4;
@@ -36,21 +36,21 @@
             --header-bg: rgba(18, 22, 41, 0.85);
             --header-border: rgba(255, 255, 255, 0.12);
 
-            --modal-bg: rgba(18, 22, 41, 0.95);
-            --modal-border: rgba(255, 255, 255, 0.15);
+            --modal-bg: rgba(18, 22, 41, 0.96);
+            --modal-border: rgba(244, 211, 94, 0.2);
         }
 
-        /* Light Mode Overrides - High Contrast & Soft Eyecare Colors */
+        /* Light Mode - High Contrast & Eyecare Colors */
         body.light-mode {
             --bg-gradient: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --card-border: rgba(203, 213, 225, 0.9);
-            --card-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.08);
+            --card-bg: rgba(255, 255, 255, 0.94);
+            --card-border: rgba(99, 102, 241, 0.2);
+            --card-shadow: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
             
             --text-primary: #0f172a;
             --text-secondary: #334155;
             --text-muted: #64748b;
-            --accent-gold: #d97706;
+            --accent-gold: #4f46e5;
             --accent-purple: #6d28d9;
             --accent-cyan: #0284c7;
             
@@ -58,7 +58,7 @@
             --pill-border: #cbd5e1;
             --bio-bg: #ffffff;
             
-            --header-bg: rgba(255, 255, 255, 0.9);
+            --header-bg: rgba(255, 255, 255, 0.92);
             --header-border: rgba(203, 213, 225, 0.8);
 
             --modal-bg: #ffffff;
@@ -74,6 +74,7 @@
         body {
             font-family: 'Outfit', 'Ubuntu', sans-serif;
             background: var(--bg-gradient);
+            background-attachment: fixed;
             color: var(--text-primary);
             min-height: 100vh;
             display: flex;
@@ -198,6 +199,10 @@
             animation: pulseAura 4s infinite ease-in-out;
         }
 
+        body.light-mode .avatar-aura {
+            background: linear-gradient(45deg, #4f46e5, #818cf8, #38bdf8);
+        }
+
         @keyframes pulseAura {
             0%, 100% { transform: scale(0.98); opacity: 0.5; }
             50% { transform: scale(1.05); opacity: 0.8; }
@@ -211,6 +216,7 @@
             object-fit: cover;
             border: 3px solid var(--card-bg);
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            background: var(--card-bg);
         }
 
         .verified-badge {
@@ -379,7 +385,7 @@
             font-weight: 400;
         }
 
-        /* Custom Button Brand Palettes */
+        /* Brand Colors */
         .btn-portfolio {
             background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
             color: #0f172a;
@@ -457,7 +463,6 @@
             opacity: 0.8;
         }
 
-        /* Modal Structure */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -528,6 +533,7 @@
             border-radius: 14px;
             overflow: hidden;
             aspect-ratio: 1;
+            background: var(--pill-bg);
         }
 
         .art-card img {
@@ -596,12 +602,10 @@
         </div>
 
         <div class="header-actions">
-            <!-- Share Profile Button -->
             <button id="share-btn" class="icon-btn" title="Bagikan Profil" aria-label="Bagikan Profil">
                 <i class="fas fa-share-nodes"></i>
             </button>
 
-            <!-- Light / Dark Mode Toggle -->
             <button id="mode-toggle" class="icon-btn" title="Ganti Mode Tema" aria-label="Ganti Mode Tema">
                 <span id="mode-icon"><i class="fas fa-moon"></i></span>
             </button>
@@ -615,10 +619,10 @@
             <div class="avatar-aura"></div>
             <img 
                 id="profile-img" 
-                src="portfolio/img/den.png" 
+                src="img/den.png" 
                 alt="Dhenias Syafe'i Suryawijaya" 
                 class="profile-pic"
-                onerror="this.onerror=null; this.src='https://placehold.co/300x300/1e293b/f4d35e?text=Dhenias+Art';"
+                onerror="this.onerror=null; this.src='portfolio/img/den.png'; if(this.src.includes('portfolio/img/den.png')){ this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'220\' viewBox=\'0 0 220 220\'><rect width=\'220\' height=\'220\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23f4d35e\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>Dhenias Art</text></svg>'; }"
             >
             <div class="verified-badge" title="Verified Digital Artist">
                 <i class="fas fa-palette"></i>
@@ -648,7 +652,7 @@
         </button>
 
         <div class="links-container">
-            <!-- Main Portfolio Highlight -->
+            <!-- Main Portfolio Link -->
             <a href="portfolio/" class="link-btn btn-portfolio tilt-card">
                 <div class="btn-content">
                     <span class="btn-icon"><i class="fas fa-folder-open"></i></span>
@@ -753,20 +757,36 @@
             </div>
             <div class="modal-grid">
                 <div class="art-card">
-                    <img src="https://placehold.co/400x400/1e1b4b/f4d35e?text=2D+Animation" alt="2D Animation">
-                    <span class="art-label">Animation</span>
+                    <img 
+                        src="img/artworks/digital/vanity-weddingdress.jpg" 
+                        alt="Wedding Dress"
+                        onerror="this.onerror=null; this.src='portfolio/img/artworks/digital/vanity-weddingdress.jpg'; if(this.src.includes('portfolio/img')){ this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'300\' height=\'300\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23f4d35e\' font-size=\'14\'>Wedding Dress</text></svg>'; }"
+                    >
+                    <span class="art-label">Digital</span>
                 </div>
                 <div class="art-card">
-                    <img src="https://placehold.co/400x400/311042/00f5d4?text=Digital+Art" alt="Digital Art">
+                    <img 
+                        src="img/artworks/digital/Collab w-vyeranie.png" 
+                        alt="Collab Art"
+                        onerror="this.onerror=null; this.src='portfolio/img/artworks/digital/Collab w-vyeranie.png'; if(this.src.includes('portfolio/img')){ this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'300\' height=\'300\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23a855f7\' font-size=\'14\'>Collab Art</text></svg>'; }"
+                    >
+                    <span class="art-label">Digital</span>
+                </div>
+                <div class="art-card">
+                    <img 
+                        src="img/artworks/digital/Illustration1.jpg" 
+                        alt="Illustration 1"
+                        onerror="this.onerror=null; this.src='portfolio/img/artworks/digital/Illustration1.jpg'; if(this.src.includes('portfolio/img')){ this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'300\' height=\'300\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%2300f5d4\' font-size=\'14\'>Illustration</text></svg>'; }"
+                    >
                     <span class="art-label">Illustration</span>
                 </div>
                 <div class="art-card">
-                    <img src="https://placehold.co/400x400/064e3b/ffe66d?text=Character+Design" alt="Character Design">
-                    <span class="art-label">Character</span>
-                </div>
-                <div class="art-card">
-                    <img src="https://placehold.co/400x400/1e293b/f4d35e?text=Storyboards" alt="Storyboards">
-                    <span class="art-label">Storyboards</span>
+                    <img 
+                        src="img/artworks/traditional/Chainsawman.jpg" 
+                        alt="Chainsawman"
+                        onerror="this.onerror=null; this.src='portfolio/img/artworks/traditional/Chainsawman.jpg'; if(this.src.includes('portfolio/img')){ this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'300\' height=\'300\' viewBox=\'0 0 300 300\'><rect width=\'300\' height=\'300\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23f4d35e\' font-size=\'14\'>Chainsawman</text></svg>'; }"
+                    >
+                    <span class="art-label">Traditional</span>
                 </div>
             </div>
             <a href="portfolio/" class="btn-modal-action">Buka Portofolio Lengkap <i class="fas fa-arrow-right"></i></a>
@@ -779,7 +799,6 @@
         <span id="toast-msg">Link berhasil disalin!</span>
     </div>
 
-    <!-- JavaScript Logic -->
     <script>
         class SoundFX {
             constructor() {
@@ -794,7 +813,7 @@
                     }
                 }
                 if (this.ctx && this.ctx.state === 'suspended') {
-                    this.ctx.resume();
+                    this.ctx.resume().catch(() => {});
                 }
             }
 
@@ -818,9 +837,7 @@
 
                     osc.start();
                     osc.stop(this.ctx.currentTime + 0.05);
-                } catch (e) {
-                    console.log('Audio feedback unavailable:', e);
-                }
+                } catch (e) {}
             }
 
             playToggle() {
@@ -843,9 +860,7 @@
 
                     osc.start();
                     osc.stop(this.ctx.currentTime + 0.08);
-                } catch (e) {
-                    console.log('Audio feedback unavailable:', e);
-                }
+                } catch (e) {}
             }
         }
 
@@ -941,7 +956,7 @@
 
                     if (dist < 100) {
                         const isLight = document.body.classList.contains('light-mode');
-                        ctx.strokeStyle = isLight ? '#0284c7' : '#f4d35e';
+                        ctx.strokeStyle = isLight ? '#4f46e5' : '#f4d35e';
                         ctx.globalAlpha = (1 - dist / 100) * (isLight ? 0.15 : 0.25);
                         ctx.lineWidth = 0.8;
                         ctx.beginPath();
@@ -995,12 +1010,13 @@
             applyTheme(!isCurrentlyLight);
         });
 
+        /* 3D Tilt Effect on Link Cards */
         document.querySelectorAll('.tilt-card').forEach(card => {
             card.addEventListener('mousemove', (e) => {
                 const rect = card.getBoundingClientRect();
                 const x = e.clientX - rect.left - rect.width / 2;
                 const y = e.clientY - rect.top - rect.height / 2;
-                card.style.transform = `perspective(1000px) rotateX(${(-y / rect.height) * 10}deg) rotateY(${(x / rect.width) * 10}deg) scale3d(1.02, 1.02, 1.02)`;
+                card.style.transform = `perspective(1000px) rotateX(${(-y / rect.height) * 8}deg) rotateY(${(x / rect.width) * 8}deg) scale3d(1.02, 1.02, 1.02)`;
             });
 
             card.addEventListener('mouseleave', () => {
