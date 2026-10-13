@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Portofolio Dhenias Syafe'i Suryawijaya, Animator 2D & Digital Artist. Lulusan SMKN 2 Cikarang Barat.">
+    <meta name="keywords" content="Dhenias Syafe'i Suryawijaya, Animasi, SMKN 2 Cikarang Barat, Portofolio, Digital Artist">
+    <link rel="icon" type="image/png" href="img/den.png">
+    <title>Dhenias Syafe'i Suryawijaya | Portfolio</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-dark: #0a0d1a;
+            --bg-gradient: linear-gradient(135deg, #0d1120 0%, #161b33 50%, #1a203c 100%);
+            --header-bg: rgba(22, 27, 51, 0.85);
+            --card-bg: rgba(26, 32, 60, 0.7);
+            --card-border: rgba(244, 211, 94, 0.15);
+            --text-primary: #f8fafc;
+            --text-secondary: #b8c1ec;
+            --text-muted: #8392ca;
+            --accent-gold: #f4d35e;
+            --accent-gold-hover: #ffe66d;
+            --accent-indigo: #818cf8;
+            --shadow-glow: 0 10px 30px -10px rgba(244, 211, 94, 0.25);
+            --modal-bg: rgba(10, 13, 26, 0.92);
+        }
+
+        body.light-mode {
+            --bg-dark: #f1f5f9;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 50%, #cbd5e1 100%);
+            --header-bg: rgba(255, 255, 255, 0.88);
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --card-border: rgba(99, 102, 241, 0.2);
+            --text-primary: #0f172a;
+            --text-secondary: #334155;
+            --text-muted: #64748b;
+            --accent-gold: #4f46e5;
+            --accent-gold-hover: #4338ca;
+            --accent-indigo: #6366f1;
+            --shadow-glow: 0 10px 30px -10px rgba(79, 70, 229, 0.2);
+            --modal-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', 'Ubuntu', sans-serif;
+            color: var(--text-primary);
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            min-height: 100vh;
+            user-select: none;
+            overflow-x: hidden;
+            transition: background 0.4s ease, color 0.4s ease;
+            position: relative;
+        }
+
+        /* Ambient Background Canvas */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.6;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-24px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(28px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-14px) rotate(1deg); }
+        }
+
+        @keyframes auraPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(244, 211, 94, 0.25); }
+            50% { box-shadow: 0 0 45px rgba(244, 211, 94, 0.45); }
+        }
+
+        body.light-mode @keyframes auraPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(79, 70, 229, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(79, 70, 229, 0.35); }
+        }
+
+        /* Header Navigation */
+        header {
+            height: 76px;
+            background: var(--header-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            border-bottom: 1px solid var(--card-border);
+            transition: all 0.3s ease;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .dhenias a {
+            text-decoration: none;
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--accent-gold);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: transform 0.2s ease;
+        }
+
+        .dhenias a:hover {
+            transform: translateX(-3px);
+        }
+
+        nav {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .subheader {
+            position: relative;
+        }
+
+        .subheader a, .artsubhead {
+            text-decoration: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .subheader a:hover, .artsubhead:hover {
+            color: var(--accent-gold);
+            background: rgba(244, 211, 94, 0.1);
+        }
+
+        body.light-mode .subheader a:hover, body.light-mode .artsubhead:hover {
+            background: rgba(79, 70, 229, 0.1);
+        }
+
+        /* Dropdown Menu */
+        .artworks-dropdown-content {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%) translateY(-10px);
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            min-width: 170px;
+            border-radius: 14px;
+            padding: 8px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.25);
+            border: 1px solid var(--card-border);
+            z-index: 1010;
+            opacity: 0;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .artworks-dropdown-content.show {
+            display: block;
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .artworks-dropdown-content a {
+            padding: 10px 14px;
+            border-radius: 8px;
+            width: 100%;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .artworks-dropdown-content a:hover {
+            background: rgba(244, 211, 94, 0.15);
+            color: var(--accent-gold);
+        }
+
+        body.light-mode .artworks-dropdown-content a:hover {
+            background: rgba(79, 70, 229, 0.12);
+        }
+
+        /* Mode Toggle */
+        .mode-toggle {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            color: var(--accent-gold);
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+
+        .mode-toggle:hover {
+            transform: scale(1.06);
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 15px rgba(244, 211, 94, 0.25);
+        }
+
+        .body-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 20px 40px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Hero Section */
+        .hero-section {
+            padding: 60px 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .hero-text {
+            flex: 1;
+        }
+
+        .hero-title {
+            font-size: 3.2rem;
+            font-weight: 800;
+            line-height: 1.15;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-hover) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .hero-description {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 28px;
+        }
+
+        .hero-cta {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .cta-button {
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .cta-button.primary {
+            background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-hover) 100%);
+            color: #0d1120;
+            box-shadow: var(--shadow-glow);
+        }
+
+        body.light-mode .cta-button.primary {
+            color: #ffffff;
+        }
+
+        .cta-button.primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(244, 211, 94, 0.4);
+        }
+
+        .cta-button.secondary {
+            background: var(--card-bg);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+        }
+
+        .cta-button.secondary:hover {
+            background: rgba(244, 211, 94, 0.1);
+            border-color: var(--accent-gold);
+            color: var(--accent-gold);
+            transform: translateY(-3px);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .floating-card {
+            animation: float 5s ease-in-out infinite;
+        }
+
+        .hero-pfp {
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--card-border);
+            animation: auraPulse 4s infinite ease-in-out;
+            background: var(--card-bg);
+        }
+
+        /* Bio & Skill Cards */
+        .bio-wrapper {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 24px;
+            margin: 30px 0 50px;
+            animation: fadeInUp 0.8s ease-out 0.2s backwards;
+        }
+
+        .bio-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 28px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            font-size: 0.98rem;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .bio-card b {
+            color: var(--accent-gold);
+            font-weight: 600;
+        }
+
+        .skill-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 28px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .skill-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .skill-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .skill-track {
+            height: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        body.light-mode .skill-track {
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        .skill-bar {
+            height: 100%;
+            width: 0%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--accent-gold) 0%, var(--accent-indigo) 100%);
+            transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Section Titles */
+        .section-header {
+            text-align: center;
+            margin: 50px 0 30px;
+        }
+
+        .section-header h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--accent-gold);
+            margin-bottom: 6px;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        /* Artwork Masonry Grid */
+        .gallery-row {
+            display: flex;
+            margin: 0 -8px;
+            width: 100%;
+        }
+
+        .gallery-column {
+            flex: 1;
+            max-width: 25%;
+            padding: 0 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 16px 35px rgba(0,0,0,0.25);
+            border-color: var(--accent-gold);
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        /* Footer */
+        .footer {
+            background: var(--card-bg);
+            border-top: 1px solid var(--card-border);
+            padding: 45px 20px;
+            text-align: center;
+            margin-top: 70px;
+            border-radius: 24px 24px 0 0;
+            backdrop-filter: blur(12px);
+        }
+
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: var(--accent-gold);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        .copyright {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 10px;
+        }
+
+        /* Artwork Lightbox Modal */
+        .artwork-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: var(--modal-bg);
+            backdrop-filter: blur(16px);
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .artwork-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .artwork-modal img {
+            max-width: 90vw;
+            max-height: 88vh;
+            border-radius: 16px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            border: 1px solid var(--card-border);
+            object-fit: contain;
+            background: var(--card-bg);
+        }
+
+        .artwork-modal .close-btn {
+            position: absolute;
+            top: 24px;
+            right: 28px;
+            font-size: 2.5rem;
+            color: var(--text-primary);
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.2s ease;
+            z-index: 10000;
+        }
+
+        .artwork-modal .close-btn:hover {
+            color: var(--accent-gold);
+        }
+
+        /* Mobile Controls */
+        .desktop-only { display: flex; }
+        .mobile-only { display: none !important; }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.8rem;
+            cursor: pointer;
+        }
+
+        .mobile-dropdown-content {
+            display: none;
+            position: fixed;
+            top: 76px;
+            left: 0;
+            width: 100vw;
+            height: calc(100vh - 76px);
+            background: var(--header-bg);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+        }
+
+        .mobile-dropdown-content.show { display: flex; }
+
+        .mobile-dropdown-content a {
+            color: var(--text-primary);
+            font-size: 1.25rem;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 12px;
+            width: 80%;
+            text-align: center;
+        }
+
+        .mobile-dropdown-content a:hover {
+            background: rgba(244, 211, 94, 0.15);
+            color: var(--accent-gold);
+        }
+
+        /* Responsive Breakpoints */
+        @media screen and (max-width: 900px) {
+            .desktop-only { display: none !important; }
+            .mobile-only { display: flex !important; }
+
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                gap: 30px;
+            }
+
+            .hero-title { font-size: 2.4rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .hero-cta { justify-content: center; }
+
+            .bio-wrapper {
+                grid-template-columns: 1fr;
+            }
+
+            .gallery-column {
+                max-width: 50%;
+            }
+        }
+
+        @media screen and (max-width: 550px) {
+            .gallery-column {
+                max-width: 100%;
+            }
+
+            .hero-title { font-size: 2rem; }
+            .hero-pfp { width: 180px; height: 180px; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-bg"></canvas>
+
+    <header id="header">
+        <div class="header-left">
+            <button id="mode-toggle-mobile" class="mode-toggle mobile-only" aria-label="Switch mode" title="Switch mode">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="dhenias">
+                <a href="/"><i class="fas fa-arrow-left"></i> Dhenias Art</a>
+            </div>
+            <nav class="desktop-only">
+                <div class="subheader">
+                    <a href="#profile"><i class="fas fa-user"></i> Profile</a>
+                </div>
+                <div class="subheader">
+                    <button class="artworks-dropdown-toggle artsubhead">
+                        <i class="fas fa-palette"></i> Artworks <i class="fas fa-chevron-down" style="font-size:0.75rem;"></i>
+                    </button>
+                    <div class="artworks-dropdown-content">
+                        <a href="#digital"><i class="fas fa-laptop-code"></i> Digital</a>
+                        <a href="#traditional"><i class="fas fa-paint-brush"></i> Traditional</a>
+                    </div>
+                </div>
+                <div class="subheader">
+                    <a href="#contact"><i class="fas fa-envelope"></i> Contacts</a>
+                </div>
+                <div class="subheader">
+                    <a href="https://trakteer.id/deniass" target="_blank" rel="noopener"><i class="fas fa-coffee"></i> Trakteer.id</a>
+                </div>
+            </nav>
+        </div>
+        
+        <button id="mode-toggle-desktop" class="mode-toggle desktop-only" aria-label="Switch mode" title="Switch mode">
+            <i class="fas fa-moon"></i>
+        </button>
+
+        <div class="mobile-only">
+            <button id="menu-toggle" class="mobile-menu-btn" aria-label="Open menu">&#9776;</button>
+        </div>
+    </header>
+
+    <!-- Mobile Dropdown Navigation -->
+    <div id="mobile-dropdown" class="mobile-dropdown-content">
+        <a href="#profile"><i class="fas fa-user"></i> Profile</a>
+        <a href="#digital"><i class="fas fa-laptop-code"></i> Digital Arts</a>
+        <a href="#traditional"><i class="fas fa-paint-brush"></i> Traditional Arts</a>
+        <a href="#contact"><i class="fas fa-envelope"></i> Contacts</a>
+        <a href="https://trakteer.id/deniass" target="_blank" rel="noopener"><i class="fas fa-coffee"></i> Trakteer.id</a>
+    </div>
+
+    <div class="body-container">
+        <section class="hero-section" id="profile">
+            <div class="hero-text">
+                <h1 class="hero-title">Dhenias Syafe'i Suryawijaya</h1>
+                <p class="hero-subtitle">Animator & Digital Artist</p>
+                <p class="hero-description">2D Animation, Cut-Out & Frame-by-Frame Illustration Specialist</p>
+                <div class="hero-cta">
+                    <a href="#artworks" class="cta-button primary"><i class="fas fa-compass"></i> Lihat Karya Saya</a>
+                    <a href="#contact" class="cta-button secondary"><i class="fas fa-paper-plane"></i> Hubungi Saya</a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="floating-card">
+                    <img class="hero-pfp" src="img/den.png" alt="Dhenias Syafe'i Suryawijaya"
+                         onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'220\' height=\'220\' viewBox=\'0 0 220 220\'><rect width=\'220\' height=\'220\' fill=\'%231a203c\'/><text x=\'50%25\' y=\'50%25\' dominant-baseline=\'middle\' text-anchor=\'middle\' fill=\'%23f4d35e\' font-family=\'sans-serif\' font-size=\'20\' font-weight=\'bold\'>Dhenias Art</text></svg>';">
+                </div>
+            </div>
+        </section>
+
+        <div class="bio-wrapper">
+            <div class="bio-card">
+                <p>
+                    Nama saya <b>Dhenias Syafe'i Suryawijaya</b>, seorang lulusan dari <b>SMKN 2 Cikarang Barat</b> jurusan <b>Animasi (2D)</b>. Ketertarikan saya pada dunia animasi 2D gaya Jepang (<i>anime</i>) dimulai sejak bangku SMP, yang kemudian menginspirasi saya untuk mendalami bidang kreatif ini secara profesional.
+                </p>
+                <p>
+                    Saya menguasai software <b>Clip Studio Paint</b> dan <b>Ibis Paint</b> untuk pembuatan karya ilustrasi & asset animasi, serta <b>ToonBoom Harmony 21</b> untuk animasi <b>Cut-Out</b> maupun <b>Frame-to-Frame</b>. Saya aktif berkolaborasi dalam berbagai proyek tim yang melatih kedisiplinan dan adaptabilitas.
+                </p>
+            </div>
+
+            <div class="skill-card">
+                <div class="skill-item">
+                    <div class="skill-header"><span>Drawing</span><span>70%</span></div>
+                    <div class="skill-track"><div class="skill-bar" data-target="70%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><span>Animate</span><span>80%</span></div>
+                    <div class="skill-track"><div class="skill-bar" data-target="80%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><span>HTML</span><span>79%</span></div>
+                    <div class="skill-track"><div class="skill-bar" data-target="79%"></div></div>
+                </div>
+                <div class="skill-item">
+                    <div class="skill-header"><span>CSS</span><span>76%</span></div>
+                    <div class="skill-track"><div class="skill-bar" data-target="76%"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <section id="artworks">
+            <section class="artworks" id="digital">
+                <div class="section-header">
+                    <h2>Digital Arts</h2>
+                    <p class="section-subtitle">Character Designs, Digital Paintings & Animations</p>
+                </div>
+                <div class="gallery-row" id="digital-gallery"></div>
+            </section>
+            
+            <section class="artworks" id="traditional" style="margin-top: 60px;">
+                <div class="section-header">
+                    <h2>Traditional Arts</h2>
+                    <p class="section-subtitle">Hand-drawn Sketches & Physical Media</p>
+                </div>
+                <div class="gallery-row" id="traditional-gallery"></div>
+            </section>
+        </section>
+    </div>
+
+    <footer id="contact" class="footer">
+        <div class="footer-content">
+            <h3 style="color: var(--accent-gold); font-size: 1.3rem;">Hubungi Saya</h3>
+            <ul class="footer-links">
+                <li><a href="https://wa.me/6282211144693" target="_blank" rel="noopener"><i class="fab fa-whatsapp"></i> +62 822-1114-4693</a></li>
+                <li><a href="mailto:dhenias08@gmail.com"><i class="fas fa-envelope"></i> dhenias08@gmail.com</a></li>
+                <li><a href="https://instagram.com/dhenyash" target="_blank" rel="noopener"><i class="fab fa-instagram"></i> Instagram</a></li>
+                <li><a href="https://tiktok.com/@dhenyash" target="_blank" rel="noopener"><i class="fab fa-tiktok"></i> TikTok</a></li>
+            </ul>
+            <p style="margin-top: 10px; font-weight: 600;">Curriculum Vitae</p>
+            <ul class="footer-links">
+                <li><a href="https://drive.google.com/file/d/13k2aOVPwMO96Pg2bq4rh7D5SZLD7iIbo/view?usp=sharing" target="_blank" rel="noopener"><i class="fab fa-google-drive"></i> Lihat CV di Google Drive</a></li>
+            </ul>
+            <p class="copyright">&copy; 2026 Dhenias Syafe'i Suryawijaya. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Artwork Modal Lightbox -->
+    <div id="image-modal" class="artwork-modal">
+        <span class="close-btn">&times;</span>
+        <img src="" alt="Artwork Enlarged">
+    </div>
+
+    <script>
+        class SoundFX {
+            constructor() {
+                this.ctx = null;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (AudioContext) {
+                        this.ctx = new AudioContext();
+                    }
+                }
+                if (this.ctx && this.ctx.state === 'suspended') {
+                    this.ctx.resume().catch(() => {});
+                }
+            }
+
+            playClick() {
+                try {
+                    this.init();
+                    if (!this.ctx) return;
+
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(580, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(880, this.ctx.currentTime + 0.05);
+
+                    gain.gain.setValueAtTime(0.12, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.05);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.05);
+                } catch (e) {}
+            }
+        }
+
+        const soundFX = new SoundFX();
+        document.addEventListener('click', () => soundFX.init(), { once: true });
+
+        function playClick() {
+            soundFX.playClick();
+        }
+
+        const canvas = document.getElementById('canvas-bg');
+        const ctx = canvas.getContext('2d');
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const particles = [];
+        const particleCount = Math.min(Math.floor(width / 22), 50);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.radius = Math.random() * 2 + 1;
+                this.alpha = Math.random() * 0.4 + 0.2;
+                const colors = ['#f4d35e', '#818cf8', '#6366f1'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+            }
+
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateCanvas);
+        }
+
+        animateCanvas();
+
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        });
+
+        (function() {
+            const body = document.body;
+            const modeToggleDesktop = document.getElementById('mode-toggle-desktop');
+            const modeToggleMobile = document.getElementById('mode-toggle-mobile');
+            const storageKey = 'dhenias-theme';
+
+            function setTheme(mode) {
+                if (mode === 'light') {
+                    body.classList.add('light-mode');
+                } else {
+                    body.classList.remove('light-mode');
+                }
+                const icon = mode === 'light' ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                if (modeToggleDesktop) modeToggleDesktop.innerHTML = icon;
+                if (modeToggleMobile) modeToggleMobile.innerHTML = icon;
+            }
+
+            function toggleTheme() {
+                playClick();
+                const isLight = body.classList.contains('light-mode');
+                const next = isLight ? 'dark' : 'light';
+                setTheme(next);
+                localStorage.setItem(storageKey, next);
+            }
+
+            const savedTheme = localStorage.getItem(storageKey) || 'dark';
+            setTheme(savedTheme);
+
+            if (modeToggleDesktop) modeToggleDesktop.onclick = toggleTheme;
+            if (modeToggleMobile) modeToggleMobile.onclick = toggleTheme;
+        })();
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // Animate Skill Progress Bars
+            setTimeout(() => {
+                document.querySelectorAll('.skill-bar').forEach(bar => {
+                    const target = bar.getAttribute('data-target');
+                    bar.style.width = target;
+                });
+            }, 300);
+
+            // Gallery Data
+            const digitalImages = [
+                { src: "img/artworks/digital/Collab w-vyeranie.png", alt: "Collab w-vyeranie" },
+                { src: "img/artworks/digital/Denya - Deya.jpeg", alt: "Denya - Deya" },
+                { src: "img/artworks/digital/Denya C.jpg", alt: "Denya C" },
+                { src: "img/artworks/digital/vanity-weddingdress.jpg", alt: "Vanity Wedding Dress" },
+                { src: "img/artworks/digital/Enya.png", alt: "Enya" },
+                { src: "img/artworks/digital/Illustration1.jpg", alt: "Illustration 1" },
+                { src: "img/artworks/digital/Minya.jpg", alt: "Minya" },
+                { src: "img/artworks/digital/Nina.jpg", alt: "Nina" }
+            ];
+
+            const traditionalImages = [
+                { src: "img/artworks/traditional/Chainsawman.jpg", alt: "Chainsawman" },
+                { src: "img/artworks/traditional/Peni Parker (Meme).jpg", alt: "Peni Parker" },
+                { src: "img/artworks/traditional/Ren.jpg", alt: "Ren Sketch" },
+                { src: "img/artworks/traditional/Toge Inumaki.jpg", alt: "Toge Inumaki" }
+            ];
+
+            function createSvgPlaceholder(title) {
+                return "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='450' viewBox='0 0 400 450'><rect width='400' height='450' fill='%231a203c'/><text x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23f4d35e' font-family='sans-serif' font-size='18'>" + encodeURIComponent(title) + "</text></svg>";
+            }
+
+            function renderGallery(images, targetId) {
+                const container = document.getElementById(targetId);
+                if (!container) return;
+                container.innerHTML = "";
+
+                const cols = [[], [], [], []];
+                images.forEach((img, idx) => {
+                    const svg = createSvgPlaceholder(img.alt);
+                    const html = `
+                        <div class="gallery-item">
+                            <img src="${img.src}" alt="${img.alt}" data-image onerror="this.onerror=null; this.src='${svg}';">
+                        </div>
+                    `;
+                    cols[idx % 4].push(html);
+                });
+
+                cols.forEach(colContent => {
+                    const colDiv = document.createElement('div');
+                    colDiv.className = 'gallery-column';
+                    colDiv.innerHTML = colContent.join('');
+                    container.appendChild(colDiv);
+                });
+
+                // Attach Lightbox triggers
+                container.querySelectorAll('img[data-image]').forEach(img => {
+                    img.addEventListener('click', () => {
+                        playClick();
+                        const modal = document.getElementById('image-modal');
+                        const modalImg = modal.querySelector('img');
+                        modalImg.src = img.src;
+                        modalImg.alt = img.alt;
+                        modal.classList.add('show');
+                    });
+                });
+            }
+
+            renderGallery(digitalImages, "digital-gallery");
+            renderGallery(traditionalImages, "traditional-gallery");
+
+            // Modal Controls
+            const modal = document.getElementById('image-modal');
+            const closeBtn = modal.querySelector('.close-btn');
+
+            closeBtn.onclick = () => {
+                playClick();
+                modal.classList.remove('show');
+            };
+
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    playClick();
+                    modal.classList.remove('show');
+                }
+            };
+
+            // Artworks Dropdown Toggle
+            const artworksToggle = document.querySelector('.artworks-dropdown-toggle');
+            const artworksDropdown = document.querySelector('.artworks-dropdown-content');
+
+            if (artworksToggle && artworksDropdown) {
+                artworksToggle.onclick = (e) => {
+                    playClick();
+                    e.stopPropagation();
+                    artworksDropdown.classList.toggle('show');
+                };
+            }
+
+            // Mobile Navigation Toggle
+            const menuToggle = document.getElementById('menu-toggle');
+            const mobileDropdown = document.getElementById('mobile-dropdown');
+
+            if (menuToggle && mobileDropdown) {
+                menuToggle.onclick = (e) => {
+                    playClick();
+                    e.stopPropagation();
+                    mobileDropdown.classList.toggle('show');
+                };
+            }
+
+            // Global Click Close
+            document.addEventListener('click', () => {
+                if (artworksDropdown) artworksDropdown.classList.remove('show');
+                if (mobileDropdown) mobileDropdown.classList.remove('show');
+            });
+        });
+    </script>
+</body>
+</html>
